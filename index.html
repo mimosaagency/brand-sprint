@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Brand Sprint Generator — Mimosa Agency</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Progress Bar -->
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+  <!-- Nav -->
+  <nav class="nav" id="mainNav">
+    <span class="nav-brand">Brand Sprint Generator</span>
+    <div class="nav-right">
+      <span class="nav-counter" id="navCounter"></span>
+      <button class="theme-toggle" id="themeToggle" onclick="App.toggleTheme()" title="Toggle theme">
+        <span class="theme-icon-dark">◐</span>
+        <span class="theme-icon-light">◑</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Steps Track Wrapper -->
+  <div class="steps-wrapper">
+    <div class="steps-track" id="stepsTrack">
+
+      <!-- STEP 0: WELCOME -->
+      <section class="step" id="step-0">
+        <div class="step-content welcome-content">
+          <p class="eyebrow">Mimosa Agency</p>
+          <h1 class="hero-title">Brand<br>Sprint.</h1>
+          <p class="hero-sub">A 12-step guided workshop to define your brand identity, personality, and strategy — then generate a shareable brief.</p>
+          <div class="welcome-inputs">
+            <input type="text" class="text-input lg" id="input-brandName" placeholder="Your Brand Name" oninput="App.save('brandName', this.value)">
+          </div>
+          <button class="btn btn-primary" onclick="App.next()">Start Workshop <span>→</span></button>
+        </div>
+      </section>
+
+      <!-- STEP 1: PROJECT BRIEF -->
+      <section class="step" id="step-1">
+        <div class="step-content">
+          <div class="step-header">
+            <span class="step-num">01</span>
+            <h2 class="step-title">Project Brief</h2>
+            <p class="step-desc">Help us get started with a comprehensive brief that describes the project's requirements and goals.</p>
+          </div>
+          <div class="step-body">
+            <textarea class="textarea-field tall" placeholder="Describe your brand project. What are you building? Who is it for? What problem does it solve? Any constraints or requirements?" id="input-brief" oninput="App.save('brief', this.value)"></textarea>
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 2: INSPIRATION -->
+      <section class="step" id="step-2">
+        <div class="step-content">
+          <div class="step-header">
+            <span class="step-num">02</span>
+            <h2 class="step-title">Inspiration</h2>
+            <p class="step-desc">What companies or brands have influenced your vision? Use these as a unique element to an overarching strategy.</p>
+          </div>
+          <div class="step-body">
+            <div class="chip-input-row">
+              <input type="text" class="text-input" id="inspiration-input" placeholder="Type a brand name and press Enter" onkeydown="App.addChip('inspiration', event)">
+              <button class="btn btn-sm" onclick="App.addChipBtn('inspiration')">Add</button>
+            </div>
+            <div class="chips-container" id="chips-inspiration"></div>
+            <textarea class="textarea-field mt-md" placeholder="Notes on what draws you to these brands..." id="input-inspirationNotes" oninput="App.save('inspirationNotes', this.value)"></textarea>
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 3: 20 YEAR PLAN -->
+      <section class="step" id="step-3">
+        <div class="step-content">
+          <div class="step-header">
+            <span class="step-num">03</span>
+            <h2 class="step-title">20 Year Plan</h2>
+            <p class="step-desc">What do you want to achieve? Think about the big picture and broad strategy — what does the lifetime of your brand look like?</p>
+          </div>
+          <div class="step-body">
+            <div class="timeline-container">
+              <div class="timeline-track">
+                <div class="timeline-line"></div>
+                <div class="timeline-nodes" id="timeline-nodes"></div>
+              </div>
+              <div class="timeline-cards" id="timeline-cards"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 4: COMPETITIVE LANDSCAPE -->
+      <section class="step" id="step-4">
+        <div class="step-content wide">
+          <div class="step-header">
+            <span class="step-num">04</span>
+            <h2 class="step-title">Competitive Landscape</h2>
+            <p class="step-desc">Where do you fit? Position competitor brands in the matrix, and most importantly — your own.</p>
+          </div>
+          <div class="step-body">
+            <div class="quadrant-layout">
+              <div class="quadrant-wrap">
+                <div class="quadrant-axis-top"><input type="text" class="axis-input" id="axis-top" value="Premium" oninput="App.updateAxisLabel('top', this.value)"></div>
+                <div class="quadrant-axis-bottom"><input type="text" class="axis-input" id="axis-bottom" value="Affordable" oninput="App.updateAxisLabel('bottom', this.value)"></div>
+                <div class="quadrant-axis-left"><input type="text" class="axis-input" id="axis-left" value="Traditional" oninput="App.updateAxisLabel('left', this.value)"></div>
+                <div class="quadrant-axis-right"><input type="text" class="axis-input" id="axis-right" value="Modern" oninput="App.updateAxisLabel('right', this.value)"></div>
+                <div class="quadrant" id="quadrant" onclick="App.placeCompetitor(event)">
+                  <div class="q-hline"></div>
+                  <div class="q-vline"></div>
+                  <div id="competitors-layer"></div>
+                </div>
+              </div>
+              <div class="quadrant-sidebar">
+                <p class="field-label">Add a brand</p>
+                <input type="text" class="text-input" id="competitor-name" placeholder="Brand name (e.g. Nike)">
+                <div class="color-row mt-sm">
+                  <button class="cdot active" style="--c:#FF38D4" onclick="App.setCompColor('#FF38D4',this)"></button>
+                  <button class="cdot" style="--c:#FF8E1D" onclick="App.setCompColor('#FF8E1D',this)"></button>
+                  <button class="cdot" style="--c:#44F33E" onclick="App.setCompColor('#44F33E',this)"></button>
+                  <button class="cdot" style="--c:#20C5F9" onclick="App.setCompColor('#20C5F9',this)"></button>
+                  <button class="cdot" style="--c:#F1F1F1" onclick="App.setCompColor('#F1F1F1',this)"></button>
+                </div>
+                <p class="helper-text mt-sm">Click the quadrant to place the brand.</p>
+                <div class="comp-list" id="comp-list"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 5: COLORS -->
+      <section class="step" id="step-5">
+        <div class="step-content wide">
+          <div class="step-header">
+            <span class="step-num">05</span>
+            <h2 class="step-title">Brand Colors</h2>
+            <p class="step-desc">Choose 1–5 colors that define your brand identity. Pick manually or choose a curated pairing.</p>
+          </div>
+          <div class="step-body">
+            <!-- Selected palette preview -->
+            <div class="palette-row" id="palette-swatches"></div>
+
+            <!-- Tab switcher -->
+            <div class="color-tabs">
+              <button class="color-tab active" id="tab-custom" onclick="App.switchColorTab('custom')">Custom</button>
+              <button class="color-tab" id="tab-pairings" onclick="App.switchColorTab('pairings')">Pairings</button>
+            </div>
+
+            <!-- Custom picker panel -->
+            <div class="color-panel" id="panel-custom">
+              <div class="palette-add-row">
+                <input type="color" id="color-picker" value="#FF38D4" class="color-picker-input">
+                <input type="text" class="text-input" id="color-name" placeholder="Color name (e.g. Electric Rose)">
+                <button class="btn btn-sm" onclick="App.addColor()">+ Add</button>
+              </div>
+            </div>
+
+            <!-- Pairings panel -->
+            <div class="color-panel hidden" id="panel-pairings">
+              <div class="pairings-filter" id="pairings-filter"></div>
+              <div class="pairings-grid" id="pairings-grid"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 6: WHAT / HOW / WHY -->
+      <section class="step" id="step-6">
+        <div class="step-content wide">
+          <div class="step-header">
+            <span class="step-num">06</span>
+            <h2 class="step-title">What, How &amp; Why</h2>
+            <p class="step-desc">The why is your core reason for existing. The how is your differentiating process. The what is simply what you do.</p>
+          </div>
+          <div class="step-body">
+            <div class="golden-layout">
+              <div class="golden-circle-wrap">
+                <svg class="golden-svg" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="150" cy="150" r="142" fill="none" stroke="#1a1a1a" stroke-width="1"/>
+                  <circle cx="150" cy="150" r="142" fill="none" stroke="#252525" stroke-width="1.5"/>
+                  <circle cx="150" cy="150" r="96" fill="none" stroke="#252525" stroke-width="1.5"/>
+                  <circle cx="150" cy="150" r="50" fill="none" stroke="#FF38D4" stroke-width="2"/>
+                  <text x="150" y="155" text-anchor="middle" fill="#FF38D4" font-size="13" font-family="PP Mori,sans-serif" font-weight="600" letter-spacing="2">WHY</text>
+                  <text x="150" y="108" text-anchor="middle" fill="#9F9F9F" font-size="11" font-family="PP Mori,sans-serif" letter-spacing="1.5">HOW</text>
+                  <text x="150" y="20" text-anchor="middle" fill="#9F9F9F" font-size="11" font-family="PP Mori,sans-serif" letter-spacing="1.5">WHAT</text>
+                </svg>
+              </div>
+              <div class="golden-inputs">
+                <div class="golden-group">
+                  <label class="field-label pink">WHY</label>
+                  <textarea class="textarea-field sm" placeholder="Why does your brand exist? Core belief or cause." id="input-why" oninput="App.save('why', this.value)"></textarea>
+                </div>
+                <div class="golden-group">
+                  <label class="field-label">HOW</label>
+                  <textarea class="textarea-field sm" placeholder="How do you do it? Your process or differentiator." id="input-how" oninput="App.save('how', this.value)"></textarea>
+                </div>
+                <div class="golden-group">
+                  <label class="field-label">WHAT</label>
+                  <textarea class="textarea-field sm" placeholder="What do you produce or offer?" id="input-what" oninput="App.save('what', this.value)"></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 7: BRAND PERSONALITY -->
+      <section class="step" id="step-7">
+        <div class="step-content">
+          <div class="step-header">
+            <span class="step-num">07</span>
+            <h2 class="step-title">Brand Personality</h2>
+            <p class="step-desc">How do you want to be perceived? Drag each slider to define your brand's character.</p>
+          </div>
+          <div class="step-body">
+            <div class="sliders-list" id="personality-sliders"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 8: IMAGERY -->
+      <section class="step" id="step-8">
+        <div class="step-content">
+          <div class="step-header">
+            <span class="step-num">08</span>
+            <h2 class="step-title">Imagery</h2>
+            <p class="step-desc">What emotions, textures, and shapes define your brand? Think about products, editorial, marketing, or packaging.</p>
+          </div>
+          <div class="step-body">
+            <div class="imagery-grid">
+              <div class="form-group">
+                <label class="field-label">Emotions</label>
+                <input type="text" class="text-input" placeholder="e.g. energetic, warm, mysterious" id="input-emotions" oninput="App.save('emotions', this.value)">
+              </div>
+              <div class="form-group">
+                <label class="field-label">Textures</label>
+                <input type="text" class="text-input" placeholder="e.g. rough, silky, raw, polished" id="input-textures" oninput="App.save('textures', this.value)">
+              </div>
+              <div class="form-group">
+                <label class="field-label">Shapes</label>
+                <input type="text" class="text-input" placeholder="e.g. organic, geometric, fluid" id="input-shapes" oninput="App.save('shapes', this.value)">
+              </div>
+              <div class="form-group">
+                <label class="field-label">References &amp; Notes</label>
+                <textarea class="textarea-field" placeholder="Describe specific images, scenes, or aesthetics that represent your brand..." id="input-imageryNotes" oninput="App.save('imageryNotes', this.value)"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 9: TOP 3 VALUES -->
+      <section class="step" id="step-9">
+        <div class="step-content">
+          <div class="step-header">
+            <span class="step-num">09</span>
+            <h2 class="step-title">Top 3 Values</h2>
+            <p class="step-desc">Choose the three core values your brand represents. Examples: Data-driven, Service, Simplicity, Trusted, Reliable, Borderless.</p>
+          </div>
+          <div class="step-body">
+            <div class="values-list" id="values-list"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 10: AUDIENCES -->
+      <section class="step" id="step-10">
+        <div class="step-content">
+          <div class="step-header">
+            <span class="step-num">10</span>
+            <h2 class="step-title">Audiences</h2>
+            <p class="step-desc">With and to whom are you speaking? Consider customers, stakeholders, investors, and internal teams.</p>
+          </div>
+          <div class="step-body">
+            <div class="audiences-list" id="audiences-list"></div>
+            <button class="btn btn-ghost mt-md" onclick="App.addAudience()">+ Add Audience</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 11: FONTS -->
+      <section class="step" id="step-11">
+        <div class="step-content">
+          <div class="step-header">
+            <span class="step-num">11</span>
+            <h2 class="step-title">Fonts &amp; Text</h2>
+            <p class="step-desc">What fonts or text decorations communicate your brand personality? Modern, classic, or playful?</p>
+          </div>
+          <div class="step-body">
+            <div class="fonts-grid">
+              <div class="form-group">
+                <label class="field-label">Primary Font</label>
+                <input type="text" class="text-input" placeholder="e.g. Garamond, PP Mori, Helvetica Neue" id="input-fontPrimary" oninput="App.save('fontPrimary', this.value)">
+              </div>
+              <div class="form-group">
+                <label class="field-label">Secondary Font</label>
+                <input type="text" class="text-input" placeholder="e.g. Courier New, Georgia" id="input-fontSecondary" oninput="App.save('fontSecondary', this.value)">
+              </div>
+              <div class="form-group">
+                <label class="field-label">Style Notes</label>
+                <textarea class="textarea-field" placeholder="Uppercase, italic, letter-spacing, weight hierarchy, decorative elements..." id="input-fontNotes" oninput="App.save('fontNotes', this.value)"></textarea>
+              </div>
+              <div class="form-group">
+                <label class="field-label">Live Preview</label>
+                <div class="font-preview" id="font-preview">
+                  <div class="preview-heading" id="preview-h">The quick brown fox</div>
+                  <div class="preview-body" id="preview-b">jumps over the lazy dog. 0123456789</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 12: NEXT STEPS -->
+      <section class="step" id="step-12">
+        <div class="step-content">
+          <div class="step-header">
+            <span class="step-num">12</span>
+            <h2 class="step-title">Next Steps</h2>
+            <p class="step-desc">Timeframes, milestones, and responsibilities. How will you drive this project forward?</p>
+          </div>
+          <div class="step-body">
+            <div class="nextsteps-list" id="nextsteps-list"></div>
+            <button class="btn btn-ghost mt-md" onclick="App.addNextStep()">+ Add Action Item</button>
+          </div>
+        </div>
+      </section>
+
+    </div><!-- /steps-track -->
+  </div><!-- /steps-wrapper -->
+
+  <!-- Bottom Nav -->
+  <div class="bottom-nav" id="bottomNav">
+    <button class="btn btn-ghost" id="btn-back" onclick="App.prev()">← Back</button>
+    <button class="btn btn-primary" id="btn-next" onclick="App.next()">Next →</button>
+  </div>
+
+  <!-- Output Overlay -->
+  <div class="output-overlay hidden" id="outputOverlay">
+    <div class="output-actions-bar">
+      <button class="btn btn-ghost" onclick="App.closeOutput()">← Back to Workshop</button>
+      <button class="btn btn-primary" onclick="window.print()">Print / Save PDF</button>
+    </div>
+    <div class="output-doc" id="outputDoc"></div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
