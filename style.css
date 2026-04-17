@@ -129,15 +129,15 @@ html, body {
 }
 /* === LOGO === */
 .nav-logo {
-  height: 18px; width: auto;
-  filter: invert(0); /* white on dark bg */
-  transition: filter 0.3s, opacity 0.2s;
-  cursor: pointer; opacity: 0.9;
+  height: 22px; width: auto; display: block;
+  filter: none; /* SVG is white — shows on dark bg */
+  transition: filter 0.3s var(--ease), opacity 0.2s;
+  cursor: pointer; opacity: 0.85;
   flex-shrink: 0;
 }
 .nav-logo:hover { opacity: 1; }
 [data-theme="light"] .nav-logo {
-  filter: invert(1); /* flips to black on light bg */
+  filter: brightness(0); /* turns white paths to black on light bg */
 }
 
 .nav-brand-wrap {
