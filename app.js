@@ -446,11 +446,11 @@ const App = {
       <div class="value-item">
         <div class="value-num">0${i + 1}</div>
         <div class="value-inputs">
-          <input type="text" class="text-input" placeholder="Value name (e.g. Simplicity)"
+          <input type="text" class="text-input" placeholder="e.g. Honesty, Craft, Access"
             value="${v.name}"
             oninput="App.saveValue(${i}, 'name', this.value)">
           <textarea class="textarea-field sm"
-            placeholder="What does this value mean for your brand?"
+            placeholder="What does this look like in practice? How would you know if you were living it?"
             oninput="App.saveValue(${i}, 'description', this.value)"
           >${v.description}</textarea>
         </div>
@@ -475,19 +475,19 @@ const App = {
         <div class="audience-grid">
           <div class="form-group">
             <label class="field-label">Who are they?</label>
-            <input type="text" class="text-input" placeholder="e.g. Creative directors"
+            <input type="text" class="text-input" placeholder="e.g. First-generation founders"
               value="${a.name}"
               oninput="App.saveAudience(${i}, 'name', this.value)">
           </div>
           <div class="form-group">
-            <label class="field-label">Role / Context</label>
-            <input type="text" class="text-input" placeholder="e.g. In-house at a Fortune 500"
+            <label class="field-label">Context</label>
+            <input type="text" class="text-input" placeholder="e.g. Building in a mature, crowded category"
               value="${a.role}"
               oninput="App.saveAudience(${i}, 'role', this.value)">
           </div>
           <div class="form-group" style="grid-column:span 2">
-            <label class="field-label">What do they need?</label>
-            <textarea class="textarea-field sm" placeholder="Their main goals, pain points, and what they're looking for from your brand..."
+            <label class="field-label">What do they need that nobody's giving them yet?</label>
+            <textarea class="textarea-field sm" placeholder="The thing they're not finding anywhere else. The gap your brand fills."
               oninput="App.saveAudience(${i}, 'needs', this.value)"
             >${a.needs}</textarea>
           </div>
@@ -518,13 +518,13 @@ const App = {
       <div class="nextstep-item" id="ns-${i}">
         <span class="nextstep-num">${String(i + 1).padStart(2, '0')}</span>
         <div class="nextstep-fields">
-          <input type="text" class="text-input nextstep-action" placeholder="Action item"
+          <input type="text" class="text-input nextstep-action" placeholder="What needs to happen"
             value="${s.action}"
             oninput="App.saveNextStep(${i}, 'action', this.value)">
-          <input type="text" class="text-input nextstep-owner" placeholder="Owner"
+          <input type="text" class="text-input nextstep-owner" placeholder="Who owns it"
             value="${s.owner}"
             oninput="App.saveNextStep(${i}, 'owner', this.value)">
-          <input type="text" class="text-input nextstep-date" placeholder="Deadline"
+          <input type="text" class="text-input nextstep-date" placeholder="By when"
             value="${s.deadline}"
             oninput="App.saveNextStep(${i}, 'deadline', this.value)">
         </div>
@@ -634,7 +634,6 @@ const App = {
         <div class="out-meta">
           <span>Brand Sprint Brief</span>
           <span style="margin-top:6px">${date}</span>
-          <span style="margin-top:4px;color:#FF38D4">Mimosa Agency</span>
         </div>
       </div>
 
@@ -725,7 +724,7 @@ const App = {
 
       <!-- FOOTER -->
       <div class="out-footer">
-        <span class="out-footer-brand">Prepared by Mimosa Agency</span>
+        <span class="out-footer-brand">mimosaagency.com</span>
         <span class="out-footer-date">${date}</span>
       </div>
     `;
