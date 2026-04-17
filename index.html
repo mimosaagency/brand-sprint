@@ -13,7 +13,19 @@
 
   <!-- Nav -->
   <nav class="nav" id="mainNav">
-    <span class="nav-brand">Brand Sprint Generator</span>
+    <div class="nav-brand-wrap">
+      <button class="nav-brand" onclick="App.toggleMenu()" id="navBrandBtn">
+        Brand Sprint Generator <span class="nav-chevron" id="navChevron">▾</span>
+      </button>
+      <div class="nav-dropdown hidden" id="navDropdown">
+        <a class="nav-dropdown-item" href="https://mimosaagency.com" target="_blank" rel="noopener">
+          Visit Mimosa Agency <span class="ext-icon">↗</span>
+        </a>
+        <button class="nav-dropdown-item" onclick="App.startOver()">
+          Start Over <span class="ext-icon">↺</span>
+        </button>
+      </div>
+    </div>
     <div class="nav-right">
       <span class="nav-counter" id="navCounter"></span>
       <button class="theme-toggle" id="themeToggle" onclick="App.toggleTheme()" title="Toggle theme">

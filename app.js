@@ -101,6 +101,29 @@ const App = {
     this.updateUI();
   },
 
+  // ─── MENU ──────────────────────────────────────────────────────────────────
+
+  toggleMenu() {
+    const dropdown = document.getElementById('navDropdown');
+    const chevron  = document.getElementById('navChevron');
+    const isOpen   = !dropdown.classList.contains('hidden');
+    dropdown.classList.toggle('hidden', isOpen);
+    chevron.classList.toggle('open', !isOpen);
+  },
+
+  closeMenu() {
+    document.getElementById('navDropdown')?.classList.add('hidden');
+    document.getElementById('navChevron')?.classList.remove('open');
+  },
+
+  startOver() {
+    this.closeMenu();
+    state.current = 0;
+    this.updateUI();
+    // Smooth scroll to top just in case
+    document.querySelector('.steps-wrapper')?.scrollTo(0, 0);
+  },
+
   // ─── THEME ─────────────────────────────────────────────────────────────────
 
   toggleTheme() {
@@ -720,6 +743,13 @@ const App = {
 // ─── BOOT ─────────────────────────────────────────────────────────────────────
 
 document.addEventListener('DOMContentLoaded', () => App.init());
+
+// Close dropdown on outside click
+document.addEventListener('click', (e) => {
+  if (!document.getElementById('navBrandBtn')?.contains(e.target)) {
+    App.closeMenu();
+  }
+});
 
 // Keyboard navigation
 document.addEventListener('keydown', (e) => {
