@@ -155,6 +155,34 @@ const App = {
         onclick="App.filterPairings('${t}')">${t}</button>
     `).join('');
     this.renderPairingCards('All');
+
+    // Drag-to-scroll on the carousel track
+    const track = document.getElementById('pairings-track');
+    if (!track) return;
+    let isDown = false, startX = 0, scrollLeft = 0;
+    this._pairingDragged = false;
+
+    track.addEventListener('mousedown', e => {
+      isDown = true;
+      this._pairingDragged = false;
+      startX = e.pageX - track.offsetLeft;
+      scrollLeft = track.scrollLeft;
+      track.classList.add('dragging');
+    });
+    track.addEventListener('mouseleave', () => {
+      isDown = false; track.classList.remove('dragging');
+    });
+    track.addEventListener('mouseup', () => {
+      isDown = false; track.classList.remove('dragging');
+    });
+    track.addEventListener('mousemove', e => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - track.offsetLeft;
+      const walk = (x - startX) * 1.4;
+      if (Math.abs(walk) > 4) this._pairingDragged = true;
+      track.scrollLeft = scrollLeft - walk;
+    });
   },
 
   filterPairings(tag) {
@@ -170,19 +198,22 @@ const App = {
       ? COLOR_PAIRINGS
       : COLOR_PAIRINGS.filter(p => p.tag === tag);
 
-    document.getElementById('pairings-grid').innerHTML = filtered.map((p, i) => {
+    document.getElementById('pairings-track').innerHTML = filtered.map((p) => {
       const globalIdx = COLOR_PAIRINGS.indexOf(p);
       const isSelected = this._selectedPairing === globalIdx;
       const chips = p.colors.map(c =>
         `<div class="pairing-chip" style="background:${c.hex}"></div>`
       ).join('');
+      const codes = p.colors.map(c =>
+        `<span class="pairing-code">${c.hex.toUpperCase()} · ${c.name}</span>`
+      ).join('');
       return `
         <div class="pairing-card${isSelected ? ' selected' : ''}"
-             onclick="App.selectPairing(${globalIdx})">
+             onclick="if(!App._pairingDragged) App.selectPairing(${globalIdx})">
           <div class="pairing-chips">${chips}</div>
           <div class="pairing-meta">
             <span class="pairing-name">${p.name}</span>
-            <span class="pairing-tag">${p.tag}</span>
+            <div class="pairing-codes">${codes}</div>
           </div>
         </div>
       `;
@@ -547,7 +578,24 @@ const App = {
     state.nextSteps[i][key] = val;
   },
 
+  // ─── GOLDEN CIRCLE ───────────────────────────────────────────────────────
+
+  highlightCircle(which) {
+    const svg = document.getElementById('goldSvg');
+    if (!svg) return;
+    svg.classList.remove('focus-why', 'focus-how', 'focus-what');
+    if (which) svg.classList.add(`focus-${which}`);
+  },
+
   // ─── OUTPUT GENERATION ───────────────────────────────────────────────────
+
+  scrollToSection(id) {
+    const el = document.getElementById(id);
+    const overlay = document.getElementById('outputOverlay');
+    if (el && overlay) {
+      overlay.scrollTo({ top: el.offsetTop - 80, behavior: 'smooth' });
+    }
+  },
 
   showOutput() {
     const doc = document.getElementById('outputDoc');
@@ -625,9 +673,31 @@ const App = {
       </div>
     `).join('') || '<p style="color:#999;font-size:14px">No milestones defined.</p>';
 
+    // Build section list for sidebar (only show sections that have content)
+    const sidebarItems = [
+      { id: 'out-brief',       label: 'Project Brief',    show: !!state.brief },
+      { id: 'out-inspiration', label: 'Inspiration',      show: !!(state.inspiration.length || state.inspirationNotes) },
+      { id: 'out-plan',        label: '20 Year Plan',     show: true },
+      { id: 'out-colors',      label: 'Colors',           show: true },
+      { id: 'out-why',         label: 'What / How / Why', show: !!(state.what || state.how || state.why) },
+      { id: 'out-personality', label: 'Personality',      show: true },
+      { id: 'out-imagery',     label: 'Imagery',          show: !!(state.emotions || state.textures || state.shapes || state.imageryNotes) },
+      { id: 'out-values',      label: 'Values',           show: true },
+      { id: 'out-audiences',   label: 'Audiences',        show: true },
+      { id: 'out-typography',  label: 'Typography',       show: !!(state.fontPrimary || state.fontSecondary || state.fontNotes) },
+      { id: 'out-nextsteps',   label: 'Next Steps',       show: true },
+    ].filter(s => s.show);
+
+    document.getElementById('outputSidebar').innerHTML = `
+      <span class="sidebar-label">Brand Brief</span>
+      ${sidebarItems.map(s => `
+        <button class="sidebar-link" onclick="App.scrollToSection('${s.id}')">${s.label}</button>
+      `).join('')}
+    `;
+
     doc.innerHTML = `
       <!-- HEADER -->
-      <div class="out-header">
+      <div class="out-header" id="out-header">
         <div>
           <div class="out-brand-name">${brand}</div>
         </div>
@@ -639,85 +709,85 @@ const App = {
 
       <!-- BRIEF -->
       ${state.brief ? `
-      <div class="out-section">
+      <div class="out-section" id="out-brief">
         <span class="out-section-title">Project Brief</span>
         <p class="out-text">${state.brief.replace(/\n/g, '<br>')}</p>
       </div>` : ''}
 
       <!-- INSPIRATION -->
-      ${state.inspiration.length || state.inspirationNotes ? `
-      <div class="out-section">
+      ${(state.inspiration.length || state.inspirationNotes) ? `
+      <div class="out-section" id="out-inspiration">
         <span class="out-section-title">Inspiration</span>
         ${inspirationHTML}
         ${state.inspirationNotes ? `<p class="out-text" style="margin-top:16px">${state.inspirationNotes}</p>` : ''}
       </div>` : ''}
 
       <!-- 20 YEAR PLAN -->
-      <div class="out-section">
+      <div class="out-section" id="out-plan">
         <span class="out-section-title">20 Year Plan</span>
         <div class="out-grid-2">${milestonesHTML}</div>
       </div>
 
       <!-- COLORS -->
-      <div class="out-section">
+      <div class="out-section" id="out-colors">
         <span class="out-section-title">Brand Colors</span>
         <div class="out-palette">${paletteHTML}</div>
       </div>
 
       <!-- WHAT / HOW / WHY -->
       ${(state.what || state.how || state.why) ? `
-      <div class="out-section">
+      <div class="out-section" id="out-why">
         <span class="out-section-title">What, How &amp; Why</span>
         <div class="out-grid-2">
-          ${state.why ? `<div class="out-card"><div class="out-card-title" style="color:#FF38D4">Why</div><div class="out-card-text">${state.why}</div></div>` : ''}
-          ${state.how ? `<div class="out-card"><div class="out-card-title">How</div><div class="out-card-text">${state.how}</div></div>` : ''}
+          ${state.why  ? `<div class="out-card"><div class="out-card-title" style="color:#FF38D4">Why</div><div class="out-card-text">${state.why}</div></div>` : ''}
+          ${state.how  ? `<div class="out-card"><div class="out-card-title">How</div><div class="out-card-text">${state.how}</div></div>` : ''}
           ${state.what ? `<div class="out-card" style="grid-column:span 2"><div class="out-card-title">What</div><div class="out-card-text">${state.what}</div></div>` : ''}
         </div>
       </div>` : ''}
 
       <!-- BRAND PERSONALITY -->
-      <div class="out-section">
+      <div class="out-section" id="out-personality">
         <span class="out-section-title">Brand Personality</span>
         <div class="out-personality">${personalityHTML}</div>
       </div>
 
       <!-- IMAGERY -->
-      ${(state.emotions || state.textures || state.shapes) ? `
-      <div class="out-section">
+      ${(state.emotions || state.textures || state.shapes || state.imageryNotes) ? `
+      <div class="out-section" id="out-imagery">
         <span class="out-section-title">Imagery &amp; Mood</span>
         <div class="out-grid-2">
-          ${state.emotions ? `<div class="out-card"><div class="out-card-title">Emotions</div><div class="out-card-text">${state.emotions}</div></div>` : ''}
-          ${state.textures ? `<div class="out-card"><div class="out-card-title">Textures</div><div class="out-card-text">${state.textures}</div></div>` : ''}
-          ${state.shapes ? `<div class="out-card"><div class="out-card-title">Shapes</div><div class="out-card-text">${state.shapes}</div></div>` : ''}
-          ${state.imageryNotes ? `<div class="out-card"><div class="out-card-title">References</div><div class="out-card-text">${state.imageryNotes}</div></div>` : ''}
+          ${state.emotions    ? `<div class="out-card"><div class="out-card-title">Emotions</div><div class="out-card-text">${state.emotions}</div></div>` : ''}
+          ${state.textures    ? `<div class="out-card"><div class="out-card-title">Textures</div><div class="out-card-text">${state.textures}</div></div>` : ''}
+          ${state.shapes      ? `<div class="out-card"><div class="out-card-title">Shapes</div><div class="out-card-text">${state.shapes}</div></div>` : ''}
+          ${state.imageryNotes? `<div class="out-card"><div class="out-card-title">References</div><div class="out-card-text">${state.imageryNotes}</div></div>` : ''}
         </div>
       </div>` : ''}
 
       <!-- VALUES -->
-      <div class="out-section">
+      <div class="out-section" id="out-values">
         <span class="out-section-title">Top 3 Values</span>
         <div class="out-values">${valuesHTML}</div>
       </div>
 
       <!-- AUDIENCES -->
-      <div class="out-section">
+      <div class="out-section" id="out-audiences">
         <span class="out-section-title">Audiences</span>
         <div class="out-grid-2">${audiencesHTML}</div>
       </div>
 
       <!-- TYPOGRAPHY -->
-      ${(state.fontPrimary || state.fontSecondary) ? `
-      <div class="out-section">
+      ${(state.fontPrimary || state.fontSecondary || state.fontNotes) ? `
+      <div class="out-section" id="out-typography">
         <span class="out-section-title">Typography</span>
         <div class="out-grid-2">
-          ${state.fontPrimary ? `<div class="out-card"><div class="out-card-title">Primary</div><div class="out-card-text">${state.fontPrimary}</div></div>` : ''}
+          ${state.fontPrimary   ? `<div class="out-card"><div class="out-card-title">Primary</div><div class="out-card-text">${state.fontPrimary}</div></div>` : ''}
           ${state.fontSecondary ? `<div class="out-card"><div class="out-card-title">Secondary</div><div class="out-card-text">${state.fontSecondary}</div></div>` : ''}
-          ${state.fontNotes ? `<div class="out-card" style="grid-column:span 2"><div class="out-card-title">Style Notes</div><div class="out-card-text">${state.fontNotes}</div></div>` : ''}
+          ${state.fontNotes     ? `<div class="out-card" style="grid-column:span 2"><div class="out-card-title">Style Notes</div><div class="out-card-text">${state.fontNotes}</div></div>` : ''}
         </div>
       </div>` : ''}
 
       <!-- NEXT STEPS -->
-      <div class="out-section">
+      <div class="out-section" id="out-nextsteps">
         <span class="out-section-title">Next Steps</span>
         <div class="out-nextsteps">${nextStepsHTML}</div>
       </div>
@@ -729,8 +799,9 @@ const App = {
       </div>
     `;
 
-    document.getElementById('outputOverlay').classList.remove('hidden');
-    document.getElementById('outputOverlay').scrollTop = 0;
+    const overlay = document.getElementById('outputOverlay');
+    overlay.classList.remove('hidden');
+    overlay.scrollTop = 0;
   },
 
   closeOutput() {
