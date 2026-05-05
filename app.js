@@ -37,6 +37,95 @@ const COLOR_PAIRINGS = [
 
 const TOTAL_STEPS = 13; // 0 = welcome, 12 = next steps
 
+// ─── AUDIENCE PRESETS ────────────────────────────────────────────────────────
+const AUDIENCE_PRESETS = [
+  { category: 'Generation', items: [
+    { name: 'Gen Alpha', role: 'Ages 1–13', needs: '' },
+    { name: 'Gen Z',     role: 'Ages 14–29', needs: '' },
+    { name: 'Millennials', role: 'Ages 30–45', needs: '' },
+    { name: 'Gen X',     role: 'Ages 46–61', needs: '' },
+  ]},
+  { category: 'Psychographic', items: [
+    { name: 'Seekers & Self-developers', role: 'Mindfulness, therapy, spirituality, coaching, wellness', needs: '' },
+    { name: 'Creators & Aesthetes',      role: 'Art, design, fashion, photography, culture', needs: '' },
+    { name: 'Achievers & Builders',      role: 'Business, productivity, tech, career growth', needs: '' },
+    { name: 'Belongers & Community',     role: 'Social spaces, identity groups, collectives', needs: '' },
+    { name: 'Escapists & Comfort seekers', role: 'Entertainment, lifestyle, relaxation', needs: '' },
+  ]},
+  { category: 'Platform behaviour', items: [
+    { name: 'TikTok-first',       role: 'Discovery-driven, short-form video native', needs: '' },
+    { name: 'Instagram-first',    role: 'Visual identity, aspirational content', needs: '' },
+    { name: 'LinkedIn-first',     role: 'Professional network, B2B mindset', needs: '' },
+    { name: 'Passive scrollers',  role: 'Consume more than they create', needs: '' },
+    { name: 'Active creators',    role: 'Post, comment, build identity online', needs: '' },
+    { name: 'Community engagers', role: 'Discord, WhatsApp groups, niche spaces', needs: '' },
+  ]},
+  { category: 'Life stage', items: [
+    { name: 'Students',                   role: 'Early independence, identity formation', needs: '' },
+    { name: 'Early career',               role: 'Building identity and income', needs: '' },
+    { name: 'Established professionals',  role: 'Settled career, looking to grow', needs: '' },
+    { name: 'Entrepreneurs & Freelancers', role: 'Independent, growth-oriented', needs: '' },
+    { name: 'Caregivers',                 role: 'Family-focused adults, dual priorities', needs: '' },
+  ]},
+  { category: 'Values axis', items: [
+    { name: 'Individualist',    role: 'Personal freedom, self-expression first', needs: '' },
+    { name: 'Collectivist',     role: 'Community, shared identity, belonging', needs: '' },
+    { name: 'Tradition-driven', role: 'Values roots, heritage, proven methods', needs: '' },
+    { name: 'Experimenters',    role: 'Curious, early adopters, change-seekers', needs: '' },
+    { name: 'Luxury-driven',    role: 'Quality, status, premium experience', needs: '' },
+    { name: 'Minimal & ethical', role: 'Sustainability, simplicity, conscious consumption', needs: '' },
+  ]},
+];
+
+// ─── FONT MOODS ──────────────────────────────────────────────────────────────
+const FONT_MOODS = [
+  {
+    mood: 'Neutral',
+    desc: 'Clean. Invisible. Gets out of the way.',
+    sample: 'The brand',
+    font: 'DM Sans',
+    weight: '400',
+    examples: ['Inter', 'DM Sans', 'Helvetica Neue'],
+    foundries: ['Google Fonts', 'Klim Type', 'Lineto'],
+  },
+  {
+    mood: 'Humanistic',
+    desc: 'Warm. Readable. Feels made by hand.',
+    sample: 'The brand',
+    font: 'EB Garamond',
+    weight: '400',
+    examples: ['EB Garamond', 'Freight Text', 'Lora'],
+    foundries: ['Google Fonts', 'Adobe Fonts', 'Frere-Jones'],
+  },
+  {
+    mood: 'Tech',
+    desc: 'Precise. Engineered. Confident.',
+    sample: 'The brand',
+    font: 'Space Grotesk',
+    weight: '700',
+    examples: ['Space Grotesk', 'Neue Montreal', 'Monument Grotesk'],
+    foundries: ['Google Fonts', 'Pangram Pangram', 'Swiss Typefaces'],
+  },
+  {
+    mood: 'Experimental',
+    desc: 'Rule-breaking. Editorial. Unexpected.',
+    sample: 'The brand',
+    font: 'Syne',
+    weight: '800',
+    examples: ['Syne', 'Migra', 'Editorial New'],
+    foundries: ['Google Fonts', 'Velvetyne', 'Pangram Pangram'],
+  },
+  {
+    mood: 'Expressive',
+    desc: 'Loud. Personality-forward. Unapologetic.',
+    sample: 'The brand',
+    font: 'Playfair Display',
+    weight: '700',
+    examples: ['Playfair Display', 'Canela', 'Cooper BT'],
+    foundries: ['Google Fonts', 'Commercial Type', 'Klim Type'],
+  },
+];
+
 const PERSONALITY_SLIDERS = [
   { key: 'formalCasual',         left: 'Formal',      right: 'Casual'      },
   { key: 'traditionalModern',    left: 'Traditional', right: 'Modern'      },
@@ -75,6 +164,7 @@ const state = {
     { name: '', role: '', description: '', needs: '' },
     { name: '', role: '', description: '', needs: '' },
   ],
+  fontMood: null,
   fontPrimary: '', fontSecondary: '', fontNotes: '',
   nextSteps: [
     { action: '', owner: '', deadline: '' },
@@ -98,6 +188,8 @@ const App = {
     this.buildAudiences();
     this.buildNextSteps();
     this.buildPairings();
+    this.buildFontMoods();
+    this.buildAudiencePresets();
     this.updateUI();
   },
 
@@ -578,6 +670,67 @@ const App = {
     state.nextSteps[i][key] = val;
   },
 
+  // ─── AUDIENCE PRESETS ────────────────────────────────────────────────────
+
+  buildAudiencePresets() {
+    const el = document.getElementById('preset-drawer-inner');
+    if (!el) return;
+    el.innerHTML = AUDIENCE_PRESETS.map(group => `
+      <div class="preset-group">
+        <span class="preset-group-label">${group.category}</span>
+        <div class="preset-chips">
+          ${group.items.map(item => `
+            <button class="preset-chip" onclick="App.addPreset(${JSON.stringify(item).replace(/"/g, '&quot;')})">
+              ${item.name}
+            </button>
+          `).join('')}
+        </div>
+      </div>
+    `).join('');
+  },
+
+  togglePresets() {
+    const drawer = document.getElementById('preset-drawer');
+    const label  = document.getElementById('preset-btn-label');
+    const isOpen = !drawer.classList.contains('hidden');
+    drawer.classList.toggle('hidden', isOpen);
+    label.textContent = isOpen ? 'Browse audience presets ↓' : 'Close presets ↑';
+  },
+
+  addPreset(preset) {
+    state.audiences.push({ ...preset });
+    this.buildAudiences();
+    // scroll to the new card
+    const list = document.getElementById('audiences-list');
+    if (list) list.lastElementChild?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  },
+
+  // ─── FONT MOODS ──────────────────────────────────────────────────────────
+
+  buildFontMoods() {
+    const el = document.getElementById('font-moods');
+    if (!el) return;
+    el.innerHTML = FONT_MOODS.map((m, i) => `
+      <div class="font-mood-card${state.fontMood === m.mood ? ' selected' : ''}"
+           onclick="App.selectFontMood('${m.mood}')">
+        <div class="font-mood-sample" style="font-family:'${m.font}',serif;font-weight:${m.weight}">
+          ${m.sample}
+        </div>
+        <div class="font-mood-meta">
+          <span class="font-mood-name">${m.mood}</span>
+          <span class="font-mood-desc">${m.desc}</span>
+          <div class="font-mood-examples">${m.examples.map(e => `<span class="font-mood-ex">${e}</span>`).join('')}</div>
+          <div class="font-mood-foundries">${m.foundries.map(f => `<span class="font-mood-foundry">${f}</span>`).join('')}</div>
+        </div>
+      </div>
+    `).join('');
+  },
+
+  selectFontMood(mood) {
+    state.fontMood = state.fontMood === mood ? null : mood; // toggle
+    this.buildFontMoods();
+  },
+
   // ─── GOLDEN CIRCLE ───────────────────────────────────────────────────────
 
   highlightCircle(which) {
@@ -684,7 +837,7 @@ const App = {
       { id: 'out-imagery',     label: 'Imagery',          show: !!(state.emotions || state.textures || state.shapes || state.imageryNotes) },
       { id: 'out-values',      label: 'Values',           show: true },
       { id: 'out-audiences',   label: 'Audiences',        show: true },
-      { id: 'out-typography',  label: 'Typography',       show: !!(state.fontPrimary || state.fontSecondary || state.fontNotes) },
+      { id: 'out-typography',  label: 'Typography',       show: !!(state.fontMood || state.fontPrimary || state.fontSecondary || state.fontNotes) },
       { id: 'out-nextsteps',   label: 'Next Steps',       show: true },
     ].filter(s => s.show);
 
@@ -776,10 +929,17 @@ const App = {
       </div>
 
       <!-- TYPOGRAPHY -->
-      ${(state.fontPrimary || state.fontSecondary || state.fontNotes) ? `
+      ${(state.fontMood || state.fontPrimary || state.fontSecondary || state.fontNotes) ? `
       <div class="out-section" id="out-typography">
         <span class="out-section-title">Typography</span>
         <div class="out-grid-2">
+          ${state.fontMood ? (() => {
+            const m = FONT_MOODS.find(f => f.mood === state.fontMood);
+            return m ? `<div class="out-card" style="grid-column:span 2">
+              <div class="out-card-title">Type Mood — ${m.mood}</div>
+              <div class="out-card-text">${m.desc}<br><em style="color:#999">Examples: ${m.examples.join(', ')}</em></div>
+            </div>` : '';
+          })() : ''}
           ${state.fontPrimary   ? `<div class="out-card"><div class="out-card-title">Primary</div><div class="out-card-text">${state.fontPrimary}</div></div>` : ''}
           ${state.fontSecondary ? `<div class="out-card"><div class="out-card-title">Secondary</div><div class="out-card-text">${state.fontSecondary}</div></div>` : ''}
           ${state.fontNotes     ? `<div class="out-card" style="grid-column:span 2"><div class="out-card-title">Style Notes</div><div class="out-card-text">${state.fontNotes}</div></div>` : ''}

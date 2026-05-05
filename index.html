@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Brand Sprint Generator — Mimosa Agency</title>
   <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,700;1,400&family=EB+Garamond:ital,wght@0,400;0,700;1,400&family=Space+Grotesk:wght@400;700&family=Syne:wght@700;800&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -75,125 +76,11 @@
         </div>
       </section>
 
-      <!-- STEP 2: INSPIRATION -->
+      <!-- STEP 2: WHAT / HOW / WHY (moved up — it's the foundation) -->
       <section class="step" id="step-2">
-        <div class="step-content">
+        <div class="step-content wide">
           <div class="step-header">
             <span class="step-num">02</span>
-            <h2 class="step-title">Inspiration</h2>
-            <p class="step-desc">What brands do you keep coming back to? Not to copy — to understand why they work.</p>
-          </div>
-          <div class="step-body">
-            <div class="chip-input-row">
-              <input type="text" class="text-input" id="inspiration-input" placeholder="e.g. Patagonia, Glossier, Stripe" onkeydown="App.addChip('inspiration', event)">
-              <button class="btn btn-sm" onclick="App.addChipBtn('inspiration')">Add</button>
-            </div>
-            <div class="chips-container" id="chips-inspiration"></div>
-            <textarea class="textarea-field mt-md" placeholder="What is it about them? The aesthetic, the attitude, the way they talk?" id="input-inspirationNotes" oninput="App.save('inspirationNotes', this.value)"></textarea>
-          </div>
-        </div>
-      </section>
-
-      <!-- STEP 3: 20 YEAR PLAN -->
-      <section class="step" id="step-3">
-        <div class="step-content">
-          <div class="step-header">
-            <span class="step-num">03</span>
-            <h2 class="step-title">20 Year Plan</h2>
-            <p class="step-desc">Where does this go? Not the safe answer. The one that feels almost too ambitious to say out loud.</p>
-          </div>
-          <div class="step-body">
-            <div class="timeline-container">
-              <div class="timeline-track">
-                <div class="timeline-line"></div>
-                <div class="timeline-nodes" id="timeline-nodes"></div>
-              </div>
-              <div class="timeline-cards" id="timeline-cards"></div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- STEP 4: COMPETITIVE LANDSCAPE -->
-      <section class="step" id="step-4">
-        <div class="step-content wide">
-          <div class="step-header">
-            <span class="step-num">04</span>
-            <h2 class="step-title">Competitive Landscape</h2>
-            <p class="step-desc">Who else is in the room? Map your competitors — then find where you don't overlap. That gap is where you live.</p>
-          </div>
-          <div class="step-body">
-            <div class="quadrant-layout">
-              <div class="quadrant-wrap">
-                <div class="quadrant-axis-top"><input type="text" class="axis-input" id="axis-top" value="Premium" oninput="App.updateAxisLabel('top', this.value)"></div>
-                <div class="quadrant-axis-bottom"><input type="text" class="axis-input" id="axis-bottom" value="Affordable" oninput="App.updateAxisLabel('bottom', this.value)"></div>
-                <div class="quadrant-axis-left"><input type="text" class="axis-input" id="axis-left" value="Traditional" oninput="App.updateAxisLabel('left', this.value)"></div>
-                <div class="quadrant-axis-right"><input type="text" class="axis-input" id="axis-right" value="Modern" oninput="App.updateAxisLabel('right', this.value)"></div>
-                <div class="quadrant" id="quadrant" onclick="App.placeCompetitor(event)">
-                  <div class="q-hline"></div>
-                  <div class="q-vline"></div>
-                  <div id="competitors-layer"></div>
-                </div>
-              </div>
-              <div class="quadrant-sidebar">
-                <p class="field-label">Add a brand</p>
-                <input type="text" class="text-input" id="competitor-name" placeholder="Brand name (e.g. Nike)">
-                <div class="color-row mt-sm">
-                  <button class="cdot active" style="--c:#FF38D4" onclick="App.setCompColor('#FF38D4',this)"></button>
-                  <button class="cdot" style="--c:#FF8E1D" onclick="App.setCompColor('#FF8E1D',this)"></button>
-                  <button class="cdot" style="--c:#44F33E" onclick="App.setCompColor('#44F33E',this)"></button>
-                  <button class="cdot" style="--c:#20C5F9" onclick="App.setCompColor('#20C5F9',this)"></button>
-                  <button class="cdot" style="--c:#F1F1F1" onclick="App.setCompColor('#F1F1F1',this)"></button>
-                </div>
-                <p class="helper-text mt-sm">Click the quadrant to place the brand.</p>
-                <div class="comp-list" id="comp-list"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- STEP 5: COLORS -->
-      <section class="step" id="step-5">
-        <div class="step-content wide">
-          <div class="step-header">
-            <span class="step-num">05</span>
-            <h2 class="step-title">Brand Colors</h2>
-            <p class="step-desc">Colors carry feeling before words do. Pick what feels right — then name it.</p>
-          </div>
-          <div class="step-body">
-            <!-- Selected palette preview -->
-            <div class="palette-row" id="palette-swatches"></div>
-
-            <!-- Tab switcher -->
-            <div class="color-tabs">
-              <button class="color-tab active" id="tab-custom" onclick="App.switchColorTab('custom')">Custom</button>
-              <button class="color-tab" id="tab-pairings" onclick="App.switchColorTab('pairings')">Pairings</button>
-            </div>
-
-            <!-- Custom picker panel -->
-            <div class="color-panel" id="panel-custom">
-              <div class="palette-add-row">
-                <input type="color" id="color-picker" value="#FF38D4" class="color-picker-input">
-                <input type="text" class="text-input" id="color-name" placeholder="Color name (e.g. Electric Rose)">
-                <button class="btn btn-sm" onclick="App.addColor()">+ Add</button>
-              </div>
-            </div>
-
-            <!-- Pairings panel -->
-            <div class="color-panel hidden" id="panel-pairings">
-              <div class="pairings-filter" id="pairings-filter"></div>
-              <div class="pairings-track" id="pairings-track"></div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- STEP 6: WHAT / HOW / WHY -->
-      <section class="step" id="step-6">
-        <div class="step-content wide">
-          <div class="step-header">
-            <span class="step-num">06</span>
             <h2 class="step-title">What, How &amp; Why</h2>
             <p class="step-desc">Start with why. Most brands skip it. The ones that don't — you can feel the difference.</p>
           </div>
@@ -238,6 +125,104 @@
         </div>
       </section>
 
+      <!-- STEP 3: TOP 3 VALUES -->
+      <section class="step" id="step-3">
+        <div class="step-content">
+          <div class="step-header">
+            <span class="step-num">03</span>
+            <h2 class="step-title">Top 3 Values</h2>
+            <p class="step-desc">Not the values you'd put on a website. The ones you'd actually defend in a room.</p>
+          </div>
+          <div class="step-body">
+            <div class="values-list" id="values-list"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 4: 20 YEAR PLAN -->
+      <section class="step" id="step-4">
+        <div class="step-content">
+          <div class="step-header">
+            <span class="step-num">04</span>
+            <h2 class="step-title">20 Year Plan</h2>
+            <p class="step-desc">Where does this go? Not the safe answer. The one that feels almost too ambitious to say out loud.</p>
+          </div>
+          <div class="step-body">
+            <div class="timeline-container">
+              <div class="timeline-track">
+                <div class="timeline-line"></div>
+                <div class="timeline-nodes" id="timeline-nodes"></div>
+              </div>
+              <div class="timeline-cards" id="timeline-cards"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 5: AUDIENCES -->
+      <section class="step" id="step-5">
+        <div class="step-content wide">
+          <div class="step-header">
+            <span class="step-num">05</span>
+            <h2 class="step-title">Audiences</h2>
+            <p class="step-desc">Not who you think you should target — who you actually want. The audience that makes the work worth doing.</p>
+          </div>
+          <div class="step-body">
+            <!-- Preset drawer trigger -->
+            <div class="preset-bar">
+              <button class="btn btn-ghost btn-sm" onclick="App.togglePresets()">
+                <span id="preset-btn-label">Browse audience presets ↓</span>
+              </button>
+            </div>
+            <!-- Presets drawer -->
+            <div class="preset-drawer hidden" id="preset-drawer">
+              <div class="preset-drawer-inner" id="preset-drawer-inner"></div>
+            </div>
+            <div class="audiences-list" id="audiences-list"></div>
+            <button class="btn btn-ghost mt-md" onclick="App.addAudience()">+ Add Audience</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 6: COMPETITIVE LANDSCAPE -->
+      <section class="step" id="step-6">
+        <div class="step-content wide">
+          <div class="step-header">
+            <span class="step-num">06</span>
+            <h2 class="step-title">Competitive Landscape</h2>
+            <p class="step-desc">Who else is in the room? Map your competitors — then find where you don't overlap. That gap is where you live.</p>
+          </div>
+          <div class="step-body">
+            <div class="quadrant-layout">
+              <div class="quadrant-wrap">
+                <div class="quadrant-axis-top"><input type="text" class="axis-input" id="axis-top" value="Premium" oninput="App.updateAxisLabel('top', this.value)"></div>
+                <div class="quadrant-axis-bottom"><input type="text" class="axis-input" id="axis-bottom" value="Affordable" oninput="App.updateAxisLabel('bottom', this.value)"></div>
+                <div class="quadrant-axis-left"><input type="text" class="axis-input" id="axis-left" value="Traditional" oninput="App.updateAxisLabel('left', this.value)"></div>
+                <div class="quadrant-axis-right"><input type="text" class="axis-input" id="axis-right" value="Modern" oninput="App.updateAxisLabel('right', this.value)"></div>
+                <div class="quadrant" id="quadrant" onclick="App.placeCompetitor(event)">
+                  <div class="q-hline"></div>
+                  <div class="q-vline"></div>
+                  <div id="competitors-layer"></div>
+                </div>
+              </div>
+              <div class="quadrant-sidebar">
+                <p class="field-label">Add a brand</p>
+                <input type="text" class="text-input" id="competitor-name" placeholder="Brand name (e.g. Nike)">
+                <div class="color-row mt-sm">
+                  <button class="cdot active" style="--c:#FF38D4" onclick="App.setCompColor('#FF38D4',this)"></button>
+                  <button class="cdot" style="--c:#FF8E1D" onclick="App.setCompColor('#FF8E1D',this)"></button>
+                  <button class="cdot" style="--c:#44F33E" onclick="App.setCompColor('#44F33E',this)"></button>
+                  <button class="cdot" style="--c:#20C5F9" onclick="App.setCompColor('#20C5F9',this)"></button>
+                  <button class="cdot" style="--c:#F1F1F1" onclick="App.setCompColor('#F1F1F1',this)"></button>
+                </div>
+                <p class="helper-text mt-sm">Click the quadrant to place the brand.</p>
+                <div class="comp-list" id="comp-list"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- STEP 7: BRAND PERSONALITY -->
       <section class="step" id="step-7">
         <div class="step-content">
@@ -252,11 +237,91 @@
         </div>
       </section>
 
-      <!-- STEP 8: IMAGERY -->
+      <!-- STEP 8: INSPIRATION -->
       <section class="step" id="step-8">
         <div class="step-content">
           <div class="step-header">
             <span class="step-num">08</span>
+            <h2 class="step-title">Inspiration</h2>
+            <p class="step-desc">What brands do you keep coming back to? Not to copy — to understand why they work.</p>
+          </div>
+          <div class="step-body">
+            <div class="chip-input-row">
+              <input type="text" class="text-input" id="inspiration-input" placeholder="e.g. Patagonia, Glossier, Stripe" onkeydown="App.addChip('inspiration', event)">
+              <button class="btn btn-sm" onclick="App.addChipBtn('inspiration')">Add</button>
+            </div>
+            <div class="chips-container" id="chips-inspiration"></div>
+            <textarea class="textarea-field mt-md" placeholder="What is it about them? The aesthetic, the attitude, the way they talk?" id="input-inspirationNotes" oninput="App.save('inspirationNotes', this.value)"></textarea>
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 9: COLORS -->
+      <section class="step" id="step-9">
+        <div class="step-content wide">
+          <div class="step-header">
+            <span class="step-num">09</span>
+            <h2 class="step-title">Brand Colors</h2>
+            <p class="step-desc">Colors carry feeling before words do. Pick what feels right — then name it.</p>
+          </div>
+          <div class="step-body">
+            <div class="palette-row" id="palette-swatches"></div>
+            <div class="color-tabs">
+              <button class="color-tab active" id="tab-custom" onclick="App.switchColorTab('custom')">Custom</button>
+              <button class="color-tab" id="tab-pairings" onclick="App.switchColorTab('pairings')">Pairings</button>
+            </div>
+            <div class="color-panel" id="panel-custom">
+              <div class="palette-add-row">
+                <input type="color" id="color-picker" value="#FF38D4" class="color-picker-input">
+                <input type="text" class="text-input" id="color-name" placeholder="Color name (e.g. Electric Rose)">
+                <button class="btn btn-sm" onclick="App.addColor()">+ Add</button>
+              </div>
+            </div>
+            <div class="color-panel hidden" id="panel-pairings">
+              <div class="pairings-filter" id="pairings-filter"></div>
+              <div class="pairings-track" id="pairings-track"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 10: FONTS & TEXT — mood-based picker -->
+      <section class="step" id="step-10">
+        <div class="step-content wide">
+          <div class="step-header">
+            <span class="step-num">10</span>
+            <h2 class="step-title">Type &amp; Feel</h2>
+            <p class="step-desc">Don't name a font — pick a feeling. Type says everything before anyone reads a word.</p>
+          </div>
+          <div class="step-body">
+            <p class="field-label" style="margin-bottom:16px">What vibe does your type need to have?</p>
+            <div class="font-moods" id="font-moods"></div>
+            <details class="font-details" id="font-details-toggle">
+              <summary>Already know your exact fonts? Add them here →</summary>
+              <div class="fonts-grid">
+                <div class="form-group">
+                  <label class="field-label">Primary Font</label>
+                  <input type="text" class="text-input" placeholder="e.g. PP Mori, Garamond, GT America" id="input-fontPrimary" oninput="App.save('fontPrimary', this.value)">
+                </div>
+                <div class="form-group">
+                  <label class="field-label">Secondary Font</label>
+                  <input type="text" class="text-input" placeholder="e.g. Courier, Times New Roman" id="input-fontSecondary" oninput="App.save('fontSecondary', this.value)">
+                </div>
+                <div class="form-group" style="grid-column: span 2">
+                  <label class="field-label">Style Notes</label>
+                  <textarea class="textarea-field" placeholder="How does text behave? All caps? Tight tracking? What mood does it set?" id="input-fontNotes" oninput="App.save('fontNotes', this.value)"></textarea>
+                </div>
+              </div>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 11: IMAGERY -->
+      <section class="step" id="step-11">
+        <div class="step-content">
+          <div class="step-header">
+            <span class="step-num">11</span>
             <h2 class="step-title">Imagery</h2>
             <p class="step-desc">Close your eyes. What does this brand feel like — before anyone reads a word?</p>
           </div>
@@ -277,62 +342,6 @@
               <div class="form-group">
                 <label class="field-label">References</label>
                 <textarea class="textarea-field" placeholder="A film, a city, a material, a decade. What world does this brand live in?" id="input-imageryNotes" oninput="App.save('imageryNotes', this.value)"></textarea>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- STEP 9: TOP 3 VALUES -->
-      <section class="step" id="step-9">
-        <div class="step-content">
-          <div class="step-header">
-            <span class="step-num">09</span>
-            <h2 class="step-title">Top 3 Values</h2>
-            <p class="step-desc">Not the values you'd put on a website. The ones you'd actually defend in a room.</p>
-          </div>
-          <div class="step-body">
-            <div class="values-list" id="values-list"></div>
-          </div>
-        </div>
-      </section>
-
-      <!-- STEP 10: AUDIENCES -->
-      <section class="step" id="step-10">
-        <div class="step-content">
-          <div class="step-header">
-            <span class="step-num">10</span>
-            <h2 class="step-title">Audiences</h2>
-            <p class="step-desc">Not who you think you should target — who you actually want. The audience that makes the work worth doing.</p>
-          </div>
-          <div class="step-body">
-            <div class="audiences-list" id="audiences-list"></div>
-            <button class="btn btn-ghost mt-md" onclick="App.addAudience()">+ Add Audience</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- STEP 11: FONTS -->
-      <section class="step" id="step-11">
-        <div class="step-content">
-          <div class="step-header">
-            <span class="step-num">11</span>
-            <h2 class="step-title">Fonts &amp; Text</h2>
-            <p class="step-desc">Strip the logo. Strip the color. Does the type alone tell you who this is?</p>
-          </div>
-          <div class="step-body">
-            <div class="fonts-grid">
-              <div class="form-group">
-                <label class="field-label">Primary Font</label>
-                <input type="text" class="text-input" placeholder="e.g. PP Mori, Garamond, GT America" id="input-fontPrimary" oninput="App.save('fontPrimary', this.value)">
-              </div>
-              <div class="form-group">
-                <label class="field-label">Secondary Font</label>
-                <input type="text" class="text-input" placeholder="e.g. Courier, Times New Roman" id="input-fontSecondary" oninput="App.save('fontSecondary', this.value)">
-              </div>
-              <div class="form-group">
-                <label class="field-label">Style Notes</label>
-                <textarea class="textarea-field" placeholder="How does text behave? All caps? Tight tracking? What mood does it set?" id="input-fontNotes" oninput="App.save('fontNotes', this.value)"></textarea>
               </div>
             </div>
           </div>

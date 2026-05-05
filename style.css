@@ -1006,6 +1006,112 @@ html, body {
   box-shadow: 0 1px 4px rgba(0,0,0,0.15);
 }
 
+/* === AUDIENCE PRESET DRAWER === */
+.preset-bar { margin-bottom: 12px; }
+
+.preset-drawer {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px 24px 24px;
+  margin-bottom: 24px;
+  background: var(--card);
+  animation: swatchIn 0.2s var(--ease);
+}
+.preset-drawer.hidden { display: none; }
+
+.preset-group { margin-bottom: 18px; }
+.preset-group:last-child { margin-bottom: 0; }
+
+.preset-group-label {
+  display: block; font-size: 9px; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--grey);
+  margin-bottom: 8px; font-family: var(--font);
+}
+.preset-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.preset-chip {
+  padding: 5px 14px; border-radius: 100px;
+  font-family: var(--font); font-size: 12px;
+  background: var(--bg); color: var(--off-white);
+  border: 1px solid var(--border);
+  cursor: pointer; transition: all 0.15s;
+}
+.preset-chip:hover {
+  background: var(--pink); color: #fff;
+  border-color: var(--pink);
+}
+
+/* === FONT MOOD CARDS === */
+.font-moods {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 14px;
+  margin-bottom: 32px;
+}
+
+.font-mood-card {
+  border: 2px solid var(--border);
+  border-radius: 16px; overflow: hidden;
+  cursor: pointer; background: var(--card);
+  transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+.font-mood-card:hover {
+  border-color: var(--grey);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+}
+.font-mood-card.selected {
+  border-color: var(--pink);
+  box-shadow: 0 0 0 1px var(--pink), 0 8px 24px rgba(255,56,212,0.15);
+}
+
+.font-mood-sample {
+  height: 100px; display: flex; align-items: center; justify-content: center;
+  font-size: 28px; background: var(--bg);
+  color: var(--off-white); letter-spacing: -0.01em;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.2s;
+}
+.font-mood-card.selected .font-mood-sample {
+  background: rgba(255,56,212,0.06);
+}
+
+.font-mood-meta { padding: 12px 14px 14px; }
+
+.font-mood-name {
+  display: block; font-family: var(--font); font-size: 13px;
+  font-weight: 600; color: var(--off-white); margin-bottom: 3px;
+}
+.font-mood-desc {
+  display: block; font-family: var(--font); font-size: 11px;
+  color: var(--grey); margin-bottom: 10px; line-height: 1.4;
+}
+.font-mood-examples { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
+.font-mood-ex {
+  font-size: 10px; font-family: var(--font);
+  color: var(--grey); background: var(--bg);
+  padding: 2px 7px; border-radius: 4px;
+  border: 1px solid var(--border);
+}
+.font-mood-foundries { display: flex; flex-wrap: wrap; gap: 4px; }
+.font-mood-foundry {
+  font-size: 9px; font-family: var(--font);
+  color: var(--pink); letter-spacing: 0.04em;
+}
+
+/* Font details toggle (details/summary) */
+.font-details {
+  border-top: 1px solid var(--border);
+  padding-top: 20px;
+}
+.font-details summary {
+  font-family: var(--font); font-size: 12px;
+  color: var(--grey); cursor: pointer; letter-spacing: 0.02em;
+  padding: 4px 0; transition: color 0.15s;
+}
+.font-details summary:hover { color: var(--off-white); }
+.font-details .fonts-grid { margin-top: 20px; }
+
 /* === PRINT === */
 @media print {
   /* Force ALL backgrounds and colors to print — this is what fixes blank color swatches */
