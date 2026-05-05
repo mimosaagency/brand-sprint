@@ -222,16 +222,61 @@ html, body {
   will-change: transform;
 }
 
+/* === STEP NAV (BREADCRUMB) === */
+.step-nav {
+  position: fixed; top: 56px; left: 0; right: 0;
+  display: flex; align-items: center; gap: 2px;
+  padding: 6px 40px;
+  overflow-x: auto; overflow-y: hidden;
+  z-index: 90;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.step-nav::-webkit-scrollbar { display: none; }
+.step-nav.empty { pointer-events: none; }
+
+.step-pill {
+  flex-shrink: 0;
+  padding: 5px 13px; border-radius: 100px;
+  font-family: var(--font); font-size: 10px;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  cursor: pointer;
+  border: 1px solid transparent;
+  background: transparent; color: var(--grey);
+  transition: color 0.15s, background 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+.step-pill:hover {
+  color: var(--off-white);
+  background: var(--off-black);
+  border-color: var(--border);
+}
+.step-pill.active {
+  background: var(--pink); color: #fff;
+  border-color: var(--pink);
+}
+.step-pill.done {
+  color: var(--grey);
+  opacity: 0.7;
+}
+[data-theme="light"] .step-pill:hover {
+  background: #f0f0f0; color: #111; border-color: #ccc;
+}
+[data-theme="light"] .step-pill.active {
+  background: var(--pink); color: #fff; border-color: var(--pink);
+}
+[data-theme="light"] .step-pill.done { opacity: 0.6; }
+
 /* === STEP === */
 .step {
   min-width: 100vw; height: 100vh;
   display: flex; align-items: flex-start; justify-content: center;
-  padding: 80px 48px 100px;
+  padding: 120px 48px 100px;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }
 /* Welcome screen: keep content vertically centered */
-#step-0 { align-items: center; }
+#step-0 { align-items: center; padding-top: 80px; }
 .step-content {
   max-width: 720px; width: 100%;
 }
@@ -1112,6 +1157,39 @@ html, body {
 .font-details summary:hover { color: var(--off-white); }
 .font-details .fonts-grid { margin-top: 20px; }
 
+/* === SCOPE & STARTING POINT === */
+.scope-section { }
+.scope-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.scope-chip {
+  padding: 9px 20px; border-radius: 100px;
+  font-family: var(--font); font-size: 13px; letter-spacing: 0.02em;
+  cursor: pointer;
+  background: var(--card);
+  color: var(--grey);
+  border: 1.5px solid var(--border);
+  transition: all 0.18s var(--ease);
+}
+.scope-chip:hover {
+  border-color: var(--grey); color: var(--off-white);
+  transform: translateY(-1px);
+}
+.scope-chip.selected {
+  background: var(--pink); color: #fff;
+  border-color: var(--pink);
+  box-shadow: 0 4px 14px rgba(255,56,212,0.25);
+}
+
+[data-theme="light"] .scope-chip {
+  background: #f8f8f8; color: #666; border-color: #e0e0e0;
+}
+[data-theme="light"] .scope-chip:hover {
+  background: #f0f0f0; border-color: #aaa; color: #111;
+}
+[data-theme="light"] .scope-chip.selected {
+  background: var(--pink); color: #fff; border-color: var(--pink);
+}
+
 /* === PRINT === */
 @media print {
   /* Force ALL backgrounds and colors to print — this is what fixes blank color swatches */
@@ -1131,6 +1209,7 @@ html, body {
   /* Hide everything except the output doc */
   .progress-bar,
   .nav,
+  .step-nav,
   .steps-wrapper,
   .bottom-nav,
   .output-actions-bar,

@@ -46,6 +46,9 @@
     </div>
   </nav>
 
+  <!-- Step Nav (Breadcrumb) -->
+  <div class="step-nav" id="stepNav"></div>
+
   <!-- Steps Track Wrapper -->
   <div class="steps-wrapper">
     <div class="steps-track" id="stepsTrack">
@@ -62,11 +65,36 @@
         </div>
       </section>
 
-      <!-- STEP 1: PROJECT BRIEF -->
+      <!-- STEP 1: SCOPE & STARTING POINT -->
       <section class="step" id="step-1">
-        <div class="step-content">
+        <div class="step-content wide">
           <div class="step-header">
             <span class="step-num">01</span>
+            <h2 class="step-title">Scope &amp; Starting Point</h2>
+            <p class="step-desc">What does this project need, and where are you starting from? Get aligned before you go deeper.</p>
+          </div>
+          <div class="step-body">
+            <div class="scope-section">
+              <p class="field-label" style="margin-bottom:14px">What does this project need?</p>
+              <div class="scope-chips" id="scope-needs-chips"></div>
+            </div>
+            <div class="scope-section" style="margin-top:32px">
+              <p class="field-label" style="margin-bottom:14px">What do you already have?</p>
+              <div class="scope-chips" id="scope-assets-chips"></div>
+            </div>
+            <div class="scope-section" style="margin-top:32px">
+              <label class="field-label">Main selling channel or context</label>
+              <input type="text" class="text-input" placeholder="e.g. Instagram, B2B sales, physical retail, SaaS platform" id="input-mainChannel" oninput="App.save('mainChannel', this.value)">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 2: PROJECT BRIEF -->
+      <section class="step" id="step-2">
+        <div class="step-content">
+          <div class="step-header">
+            <span class="step-num">02</span>
             <h2 class="step-title">Project Brief</h2>
             <p class="step-desc">Where are you right now? Give us the context — what this is, who it's for, what's at stake.</p>
           </div>
@@ -76,11 +104,11 @@
         </div>
       </section>
 
-      <!-- STEP 2: WHAT / HOW / WHY (moved up — it's the foundation) -->
-      <section class="step" id="step-2">
+      <!-- STEP 3: WHAT / HOW / WHY -->
+      <section class="step" id="step-3">
         <div class="step-content wide">
           <div class="step-header">
-            <span class="step-num">02</span>
+            <span class="step-num">03</span>
             <h2 class="step-title">What, How &amp; Why</h2>
             <p class="step-desc">Start with why. Most brands skip it. The ones that don't — you can feel the difference.</p>
           </div>
@@ -125,11 +153,11 @@
         </div>
       </section>
 
-      <!-- STEP 3: TOP 3 VALUES -->
-      <section class="step" id="step-3">
+      <!-- STEP 4: TOP 3 VALUES -->
+      <section class="step" id="step-4">
         <div class="step-content">
           <div class="step-header">
-            <span class="step-num">03</span>
+            <span class="step-num">04</span>
             <h2 class="step-title">Top 3 Values</h2>
             <p class="step-desc">Not the values you'd put on a website. The ones you'd actually defend in a room.</p>
           </div>
@@ -139,11 +167,11 @@
         </div>
       </section>
 
-      <!-- STEP 4: 20 YEAR PLAN -->
-      <section class="step" id="step-4">
+      <!-- STEP 5: 20 YEAR PLAN -->
+      <section class="step" id="step-5">
         <div class="step-content">
           <div class="step-header">
-            <span class="step-num">04</span>
+            <span class="step-num">05</span>
             <h2 class="step-title">20 Year Plan</h2>
             <p class="step-desc">Where does this go? Not the safe answer. The one that feels almost too ambitious to say out loud.</p>
           </div>
@@ -159,11 +187,11 @@
         </div>
       </section>
 
-      <!-- STEP 5: AUDIENCES -->
-      <section class="step" id="step-5">
+      <!-- STEP 6: AUDIENCES -->
+      <section class="step" id="step-6">
         <div class="step-content wide">
           <div class="step-header">
-            <span class="step-num">05</span>
+            <span class="step-num">06</span>
             <h2 class="step-title">Audiences</h2>
             <p class="step-desc">Not who you think you should target — who you actually want. The audience that makes the work worth doing.</p>
           </div>
@@ -184,11 +212,11 @@
         </div>
       </section>
 
-      <!-- STEP 6: COMPETITIVE LANDSCAPE -->
-      <section class="step" id="step-6">
+      <!-- STEP 7: COMPETITIVE LANDSCAPE -->
+      <section class="step" id="step-7">
         <div class="step-content wide">
           <div class="step-header">
-            <span class="step-num">06</span>
+            <span class="step-num">07</span>
             <h2 class="step-title">Competitive Landscape</h2>
             <p class="step-desc">Who else is in the room? Map your competitors — then find where you don't overlap. That gap is where you live.</p>
           </div>
@@ -223,11 +251,11 @@
         </div>
       </section>
 
-      <!-- STEP 7: BRAND PERSONALITY -->
-      <section class="step" id="step-7">
+      <!-- STEP 8: BRAND PERSONALITY -->
+      <section class="step" id="step-8">
         <div class="step-content">
           <div class="step-header">
-            <span class="step-num">07</span>
+            <span class="step-num">08</span>
             <h2 class="step-title">Brand Personality</h2>
             <p class="step-desc">If your brand walked into a room, how would it show up? Drag each slider to find the register.</p>
           </div>
@@ -237,11 +265,11 @@
         </div>
       </section>
 
-      <!-- STEP 8: INSPIRATION -->
-      <section class="step" id="step-8">
+      <!-- STEP 9: INSPIRATION -->
+      <section class="step" id="step-9">
         <div class="step-content">
           <div class="step-header">
-            <span class="step-num">08</span>
+            <span class="step-num">09</span>
             <h2 class="step-title">Inspiration</h2>
             <p class="step-desc">What brands do you keep coming back to? Not to copy — to understand why they work.</p>
           </div>
@@ -256,11 +284,11 @@
         </div>
       </section>
 
-      <!-- STEP 9: COLORS -->
-      <section class="step" id="step-9">
+      <!-- STEP 10: COLORS -->
+      <section class="step" id="step-10">
         <div class="step-content wide">
           <div class="step-header">
-            <span class="step-num">09</span>
+            <span class="step-num">10</span>
             <h2 class="step-title">Brand Colors</h2>
             <p class="step-desc">Colors carry feeling before words do. Pick what feels right — then name it.</p>
           </div>
@@ -285,11 +313,11 @@
         </div>
       </section>
 
-      <!-- STEP 10: FONTS & TEXT — mood-based picker -->
-      <section class="step" id="step-10">
+      <!-- STEP 11: FONTS & TEXT — mood-based picker -->
+      <section class="step" id="step-11">
         <div class="step-content wide">
           <div class="step-header">
-            <span class="step-num">10</span>
+            <span class="step-num">11</span>
             <h2 class="step-title">Type &amp; Feel</h2>
             <p class="step-desc">Don't name a font — pick a feeling. Type says everything before anyone reads a word.</p>
           </div>
@@ -317,11 +345,11 @@
         </div>
       </section>
 
-      <!-- STEP 11: IMAGERY -->
-      <section class="step" id="step-11">
+      <!-- STEP 12: IMAGERY -->
+      <section class="step" id="step-12">
         <div class="step-content">
           <div class="step-header">
-            <span class="step-num">11</span>
+            <span class="step-num">12</span>
             <h2 class="step-title">Imagery</h2>
             <p class="step-desc">Close your eyes. What does this brand feel like — before anyone reads a word?</p>
           </div>
@@ -348,11 +376,11 @@
         </div>
       </section>
 
-      <!-- STEP 12: NEXT STEPS -->
-      <section class="step" id="step-12">
+      <!-- STEP 13: NEXT STEPS -->
+      <section class="step" id="step-13">
         <div class="step-content">
           <div class="step-header">
-            <span class="step-num">12</span>
+            <span class="step-num">13</span>
             <h2 class="step-title">Next Steps</h2>
             <p class="step-desc">What happens next? Name it, own it, date it.</p>
           </div>

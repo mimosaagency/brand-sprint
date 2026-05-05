@@ -35,7 +35,36 @@ const COLOR_PAIRINGS = [
   { name: 'Groovy',            tag: 'Retro',   colors: [{ hex: '#F4743B', name: 'Papaya' }, { hex: '#F9C74F', name: 'Mustard' }, { hex: '#43AA8B', name: 'Avocado' }, { hex: '#277DA1', name: 'Denim' }] },
 ];
 
-const TOTAL_STEPS = 13; // 0 = welcome, 12 = next steps
+const TOTAL_STEPS = 14; // 0 = welcome, 13 = next steps
+
+// ─── STEP NAV LABELS ─────────────────────────────────────────────────────────
+const STEP_LABELS = [
+  'Welcome', 'Scope', 'Brief', 'Purpose', 'Values',
+  'Vision', 'Audiences', 'Market', 'Personality',
+  'Inspiration', 'Colors', 'Type', 'Imagery', 'Next Steps',
+];
+
+// ─── SCOPE DATA ───────────────────────────────────────────────────────────────
+const SCOPE_NEEDS = [
+  'Strategy & Positioning',
+  'Brand Identity',
+  'Brand Refresh',
+  'Website',
+  'Tone of Voice',
+  'Presentation Templates',
+  'Marketing Materials',
+  'Social Media',
+];
+
+const SCOPE_ASSETS = [
+  'Logo',
+  'Colors',
+  'Fonts',
+  'Brand Guidelines',
+  'Website copy',
+  'Photography',
+  'Illustrations',
+];
 
 // ─── AUDIENCE PRESETS ────────────────────────────────────────────────────────
 const AUDIENCE_PRESETS = [
@@ -141,31 +170,47 @@ const MILESTONE_LABELS = ['Now', '1 Year', '5 Years', '10 Years', '20 Years'];
 const state = {
   current: 0,
   brandName: '',
+  // Scope
+  scope: [],
+  hasAssets: [],
+  mainChannel: '',
+  // Brief
   brief: '',
+  // Inspiration
   inspiration: [],
   inspirationNotes: '',
+  // Vision
   milestones: MILESTONE_LABELS.map(label => ({ label, description: '' })),
+  // Competitive
   competitors: [],
   pendingColor: '#FF38D4',
   axisLabels: { top: 'Premium', bottom: 'Affordable', left: 'Traditional', right: 'Modern' },
+  // Colors
   colors: [],
+  // Purpose
   why: '', how: '', what: '',
+  // Personality
   personality: {
     formalCasual: 50, traditionalModern: 50, seriousPlayful: 50,
     exclusiveAccessible: 50, quietBold: 50,
   },
+  // Imagery
   emotions: '', textures: '', shapes: '', imageryNotes: '',
+  // Values
   values: [
     { name: '', description: '' },
     { name: '', description: '' },
     { name: '', description: '' },
   ],
+  // Audiences
   audiences: [
     { name: '', role: '', description: '', needs: '' },
     { name: '', role: '', description: '', needs: '' },
   ],
+  // Typography
   fontMood: null,
   fontPrimary: '', fontSecondary: '', fontNotes: '',
+  // Next steps
   nextSteps: [
     { action: '', owner: '', deadline: '' },
     { action: '', owner: '', deadline: '' },
@@ -190,6 +235,7 @@ const App = {
     this.buildPairings();
     this.buildFontMoods();
     this.buildAudiencePresets();
+    this.buildScopeChips();
     this.updateUI();
   },
 
@@ -212,7 +258,6 @@ const App = {
     this.closeMenu();
     state.current = 0;
     this.updateUI();
-    // Smooth scroll to top just in case
     document.querySelector('.steps-wrapper')?.scrollTo(0, 0);
   },
 
@@ -223,6 +268,43 @@ const App = {
     const next = current === 'dark' ? 'light' : 'dark';
     document.documentElement.setAttribute('data-theme', next);
     localStorage.setItem('sprint-theme', next);
+  },
+
+  // ─── STEP NAV (BREADCRUMB) ─────────────────────────────────────────────────
+
+  buildStepNav() {
+    const nav = document.getElementById('stepNav');
+    if (!nav) return;
+
+    // Hide on welcome screen
+    if (state.current === 0) {
+      nav.innerHTML = '';
+      nav.classList.add('empty');
+      return;
+    }
+    nav.classList.remove('empty');
+
+    nav.innerHTML = STEP_LABELS.map((label, i) => {
+      if (i === 0) return ''; // skip the Welcome pill
+      const isActive = state.current === i;
+      const isDone   = state.current > i;
+      return `<button class="step-pill${isActive ? ' active' : ''}${isDone ? ' done' : ''}"
+        onclick="App.jumpToStep(${i})">${label}</button>`;
+    }).join('');
+
+    // Scroll active pill into view
+    requestAnimationFrame(() => {
+      const active = nav.querySelector('.step-pill.active');
+      if (active) active.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    });
+  },
+
+  jumpToStep(n) {
+    state.current = n;
+    this.updateUI();
+    // Scroll active step back to top
+    const stepEl = document.getElementById(`step-${n}`);
+    if (stepEl) stepEl.scrollTop = 0;
   },
 
   // ─── COLOR TABS ────────────────────────────────────────────────────────────
@@ -338,7 +420,7 @@ const App = {
 
   updateUI() {
     const s = state.current;
-    const total = TOTAL_STEPS - 1; // steps 0..12
+    const total = TOTAL_STEPS - 1; // steps 0..13
 
     // Slide the track
     document.getElementById('stepsTrack').style.transform =
@@ -350,7 +432,7 @@ const App = {
 
     // Nav counter
     const counter = document.getElementById('navCounter');
-    counter.textContent = s === 0 ? '' : `Step ${s} of ${total}`;
+    counter.textContent = s === 0 ? '' : `${s} / ${total}`;
 
     // Back button
     const backBtn = document.getElementById('btn-back');
@@ -368,10 +450,42 @@ const App = {
       nextBtn.textContent = 'Next →';
       nextBtn.style.background = '';
     }
+
+    // Step breadcrumb nav
+    this.buildStepNav();
   },
 
   save(key, value) {
     state[key] = value;
+  },
+
+  // ─── SCOPE & STARTING POINT ──────────────────────────────────────────────
+
+  buildScopeChips() {
+    const needsEl  = document.getElementById('scope-needs-chips');
+    const assetsEl = document.getElementById('scope-assets-chips');
+
+    if (needsEl) {
+      needsEl.innerHTML = SCOPE_NEEDS.map(item => `
+        <button class="scope-chip${state.scope.includes(item) ? ' selected' : ''}"
+          onclick="App.toggleScope('scope', '${item.replace(/'/g, "\\'")}')">${item}</button>
+      `).join('');
+    }
+
+    if (assetsEl) {
+      assetsEl.innerHTML = SCOPE_ASSETS.map(item => `
+        <button class="scope-chip${state.hasAssets.includes(item) ? ' selected' : ''}"
+          onclick="App.toggleScope('hasAssets', '${item.replace(/'/g, "\\'")}')">${item}</button>
+      `).join('');
+    }
+  },
+
+  toggleScope(stateKey, item) {
+    const arr = state[stateKey];
+    const idx = arr.indexOf(item);
+    if (idx === -1) arr.push(item);
+    else arr.splice(idx, 1);
+    this.buildScopeChips();
   },
 
   // ─── CHIPS ───────────────────────────────────────────────────────────────
@@ -826,19 +940,29 @@ const App = {
       </div>
     `).join('') || '<p style="color:#999;font-size:14px">No milestones defined.</p>';
 
+    // Scope
+    const hasScopeData = state.scope.length || state.hasAssets.length || state.mainChannel;
+    const scopeHTML = hasScopeData ? `
+      <div class="out-grid-2">
+        ${state.scope.length ? `<div class="out-card"><div class="out-card-title">Project Needs</div><div class="out-card-text">${state.scope.join(' · ')}</div></div>` : ''}
+        ${state.hasAssets.length ? `<div class="out-card"><div class="out-card-title">Already Have</div><div class="out-card-text">${state.hasAssets.join(' · ')}</div></div>` : ''}
+        ${state.mainChannel ? `<div class="out-card" style="grid-column:span 2"><div class="out-card-title">Main Channel</div><div class="out-card-text">${state.mainChannel}</div></div>` : ''}
+      </div>` : '';
+
     // Build section list for sidebar (only show sections that have content)
     const sidebarItems = [
-      { id: 'out-brief',       label: 'Project Brief',    show: !!state.brief },
-      { id: 'out-inspiration', label: 'Inspiration',      show: !!(state.inspiration.length || state.inspirationNotes) },
-      { id: 'out-plan',        label: '20 Year Plan',     show: true },
-      { id: 'out-colors',      label: 'Colors',           show: true },
-      { id: 'out-why',         label: 'What / How / Why', show: !!(state.what || state.how || state.why) },
-      { id: 'out-personality', label: 'Personality',      show: true },
-      { id: 'out-imagery',     label: 'Imagery',          show: !!(state.emotions || state.textures || state.shapes || state.imageryNotes) },
-      { id: 'out-values',      label: 'Values',           show: true },
-      { id: 'out-audiences',   label: 'Audiences',        show: true },
-      { id: 'out-typography',  label: 'Typography',       show: !!(state.fontMood || state.fontPrimary || state.fontSecondary || state.fontNotes) },
-      { id: 'out-nextsteps',   label: 'Next Steps',       show: true },
+      { id: 'out-scope',       label: 'Scope',           show: !!hasScopeData },
+      { id: 'out-brief',       label: 'Brief',           show: !!state.brief },
+      { id: 'out-why',         label: 'Purpose',         show: !!(state.what || state.how || state.why) },
+      { id: 'out-values',      label: 'Values',          show: state.values.some(v => v.name) },
+      { id: 'out-plan',        label: '20 Year Vision',  show: state.milestones.some(m => m.description) },
+      { id: 'out-audiences',   label: 'Audiences',       show: state.audiences.some(a => a.name) },
+      { id: 'out-personality', label: 'Personality',     show: true },
+      { id: 'out-inspiration', label: 'Inspiration',     show: !!(state.inspiration.length || state.inspirationNotes) },
+      { id: 'out-colors',      label: 'Colors',          show: !!state.colors.length },
+      { id: 'out-typography',  label: 'Typography',      show: !!(state.fontMood || state.fontPrimary || state.fontSecondary || state.fontNotes) },
+      { id: 'out-imagery',     label: 'Imagery',         show: !!(state.emotions || state.textures || state.shapes || state.imageryNotes) },
+      { id: 'out-nextsteps',   label: 'Next Steps',      show: state.nextSteps.some(s => s.action) },
     ].filter(s => s.show);
 
     document.getElementById('outputSidebar').innerHTML = `
@@ -860,32 +984,19 @@ const App = {
         </div>
       </div>
 
+      <!-- SCOPE -->
+      ${hasScopeData ? `
+      <div class="out-section" id="out-scope">
+        <span class="out-section-title">Scope &amp; Starting Point</span>
+        ${scopeHTML}
+      </div>` : ''}
+
       <!-- BRIEF -->
       ${state.brief ? `
       <div class="out-section" id="out-brief">
         <span class="out-section-title">Project Brief</span>
         <p class="out-text">${state.brief.replace(/\n/g, '<br>')}</p>
       </div>` : ''}
-
-      <!-- INSPIRATION -->
-      ${(state.inspiration.length || state.inspirationNotes) ? `
-      <div class="out-section" id="out-inspiration">
-        <span class="out-section-title">Inspiration</span>
-        ${inspirationHTML}
-        ${state.inspirationNotes ? `<p class="out-text" style="margin-top:16px">${state.inspirationNotes}</p>` : ''}
-      </div>` : ''}
-
-      <!-- 20 YEAR PLAN -->
-      <div class="out-section" id="out-plan">
-        <span class="out-section-title">20 Year Plan</span>
-        <div class="out-grid-2">${milestonesHTML}</div>
-      </div>
-
-      <!-- COLORS -->
-      <div class="out-section" id="out-colors">
-        <span class="out-section-title">Brand Colors</span>
-        <div class="out-palette">${paletteHTML}</div>
-      </div>
 
       <!-- WHAT / HOW / WHY -->
       ${(state.what || state.how || state.why) ? `
@@ -898,35 +1009,47 @@ const App = {
         </div>
       </div>` : ''}
 
+      <!-- VALUES -->
+      ${state.values.some(v => v.name) ? `
+      <div class="out-section" id="out-values">
+        <span class="out-section-title">Top 3 Values</span>
+        <div class="out-values">${valuesHTML}</div>
+      </div>` : ''}
+
+      <!-- 20 YEAR PLAN -->
+      ${state.milestones.some(m => m.description) ? `
+      <div class="out-section" id="out-plan">
+        <span class="out-section-title">20 Year Vision</span>
+        <div class="out-grid-2">${milestonesHTML}</div>
+      </div>` : ''}
+
+      <!-- AUDIENCES -->
+      ${state.audiences.some(a => a.name) ? `
+      <div class="out-section" id="out-audiences">
+        <span class="out-section-title">Audiences</span>
+        <div class="out-grid-2">${audiencesHTML}</div>
+      </div>` : ''}
+
       <!-- BRAND PERSONALITY -->
       <div class="out-section" id="out-personality">
         <span class="out-section-title">Brand Personality</span>
         <div class="out-personality">${personalityHTML}</div>
       </div>
 
-      <!-- IMAGERY -->
-      ${(state.emotions || state.textures || state.shapes || state.imageryNotes) ? `
-      <div class="out-section" id="out-imagery">
-        <span class="out-section-title">Imagery &amp; Mood</span>
-        <div class="out-grid-2">
-          ${state.emotions    ? `<div class="out-card"><div class="out-card-title">Emotions</div><div class="out-card-text">${state.emotions}</div></div>` : ''}
-          ${state.textures    ? `<div class="out-card"><div class="out-card-title">Textures</div><div class="out-card-text">${state.textures}</div></div>` : ''}
-          ${state.shapes      ? `<div class="out-card"><div class="out-card-title">Shapes</div><div class="out-card-text">${state.shapes}</div></div>` : ''}
-          ${state.imageryNotes? `<div class="out-card"><div class="out-card-title">References</div><div class="out-card-text">${state.imageryNotes}</div></div>` : ''}
-        </div>
+      <!-- INSPIRATION -->
+      ${(state.inspiration.length || state.inspirationNotes) ? `
+      <div class="out-section" id="out-inspiration">
+        <span class="out-section-title">Inspiration</span>
+        ${inspirationHTML}
+        ${state.inspirationNotes ? `<p class="out-text" style="margin-top:16px">${state.inspirationNotes}</p>` : ''}
       </div>` : ''}
 
-      <!-- VALUES -->
-      <div class="out-section" id="out-values">
-        <span class="out-section-title">Top 3 Values</span>
-        <div class="out-values">${valuesHTML}</div>
-      </div>
-
-      <!-- AUDIENCES -->
-      <div class="out-section" id="out-audiences">
-        <span class="out-section-title">Audiences</span>
-        <div class="out-grid-2">${audiencesHTML}</div>
-      </div>
+      <!-- COLORS -->
+      ${state.colors.length ? `
+      <div class="out-section" id="out-colors">
+        <span class="out-section-title">Brand Colors</span>
+        <div class="out-palette">${paletteHTML}</div>
+      </div>` : ''}
 
       <!-- TYPOGRAPHY -->
       ${(state.fontMood || state.fontPrimary || state.fontSecondary || state.fontNotes) ? `
@@ -946,11 +1069,24 @@ const App = {
         </div>
       </div>` : ''}
 
+      <!-- IMAGERY -->
+      ${(state.emotions || state.textures || state.shapes || state.imageryNotes) ? `
+      <div class="out-section" id="out-imagery">
+        <span class="out-section-title">Imagery &amp; Mood</span>
+        <div class="out-grid-2">
+          ${state.emotions    ? `<div class="out-card"><div class="out-card-title">Emotions</div><div class="out-card-text">${state.emotions}</div></div>` : ''}
+          ${state.textures    ? `<div class="out-card"><div class="out-card-title">Textures</div><div class="out-card-text">${state.textures}</div></div>` : ''}
+          ${state.shapes      ? `<div class="out-card"><div class="out-card-title">Shapes</div><div class="out-card-text">${state.shapes}</div></div>` : ''}
+          ${state.imageryNotes? `<div class="out-card"><div class="out-card-title">References</div><div class="out-card-text">${state.imageryNotes}</div></div>` : ''}
+        </div>
+      </div>` : ''}
+
       <!-- NEXT STEPS -->
+      ${state.nextSteps.some(s => s.action) ? `
       <div class="out-section" id="out-nextsteps">
         <span class="out-section-title">Next Steps</span>
         <div class="out-nextsteps">${nextStepsHTML}</div>
-      </div>
+      </div>` : ''}
 
       <!-- FOOTER -->
       <div class="out-footer">
