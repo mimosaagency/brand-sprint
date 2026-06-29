@@ -3,42 +3,41 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Brand Sprint Generator — Mimosa Agency</title>
+  <title>Brand Sprint — mimosa</title>
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,700;1,400&family=EB+Garamond:ital,wght@0,400;0,700;1,400&family=Space+Grotesk:wght@400;700&family=Syne:wght@700;800&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
 </head>
 <body>
 
-  <!-- Progress Bar -->
+  <!-- Scroll Progress -->
   <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
 
   <!-- Nav -->
   <nav class="nav" id="mainNav">
     <div class="nav-left">
-    <svg class="nav-logo" onclick="App.startOver()" title="Back to start" viewBox="0 0 838 139" height="20" xmlns="http://www.w3.org/2000/svg" aria-label="Mimosa Agency">
-      <path d="M31.6893 34.9192H0V134.504H32.4483V82.7715C32.4483 63.9262 47.0595 57.8292 59.0142 57.8292C72.6766 57.8292 81.5952 63.372 81.5952 77.4136V134.504H114.044V82.7715C114.044 63.9262 128.655 57.8292 140.799 57.8292C154.462 57.8292 163.38 63.372 163.38 77.4136V134.504H195.828V69.2842C195.828 43.6029 177.043 32.5174 153.892 32.5174C136.814 32.5174 120.116 36.9516 110.059 48.2218C103.038 36.7668 89.3752 32.5174 72.8664 32.5174C57.4961 32.5174 41.7464 36.9516 32.6381 48.037H31.6893V34.9192Z"/>
-      <path d="M208.056 20.8776H241.263V0H208.056V20.8776ZM208.435 134.504H240.884V34.9192H208.435V134.504Z"/>
-      <path d="M285.118 34.9192H253.428V134.504H285.877V82.7715C285.877 63.9262 300.488 57.8292 312.443 57.8292C326.105 57.8292 335.023 63.372 335.023 77.4136V134.504H367.472V82.7715C367.472 63.9262 382.083 57.8292 394.227 57.8292C407.89 57.8292 416.808 63.372 416.808 77.4136V134.504H449.257V69.2842C449.257 43.6029 430.471 32.5174 407.321 32.5174C390.243 32.5174 373.544 36.9516 363.487 48.2218C356.466 36.7668 342.803 32.5174 326.295 32.5174C310.924 32.5174 295.175 36.9516 286.066 48.037H285.118V34.9192Z"/>
-      <path d="M522.396 31.4088C479.891 31.4088 457.12 51.1779 457.12 84.8039C457.12 118.43 479.891 138.199 522.396 138.199C564.901 138.199 587.672 118.43 587.672 84.8039C587.672 51.1779 564.901 31.4088 522.396 31.4088ZM522.396 114.365C501.902 114.365 490.707 103.834 490.707 84.8039C490.707 65.7738 501.902 55.2426 522.396 55.2426C542.89 55.2426 554.085 65.7738 554.085 84.8039C554.085 103.834 542.89 114.365 522.396 114.365Z"/>
-      <path d="M674.179 64.6653H708.335C707.386 39.7229 681.01 31.4088 648.182 31.4088C616.113 31.4088 591.824 39.3534 591.824 63.0024C591.824 83.5106 606.246 89.9771 628.068 92.7484L663.173 97.1826C672.85 98.4759 676.835 100.508 676.835 106.421C676.835 112.887 669.435 117.136 651.218 117.136C634.33 117.136 623.893 113.626 623.134 101.986H588.219C589.358 131.178 615.544 138.199 650.649 138.199C688.98 138.199 712.32 130.624 712.32 104.758C712.32 82.5868 698.657 76.1203 676.456 73.7184L639.074 69.469C629.396 68.3604 626.17 66.3281 626.17 61.1549C626.17 55.7969 632.812 52.1017 647.992 52.1017C662.793 52.1017 673.42 55.2426 674.179 64.6653Z"/>
-      <path d="M834.723 118.43V62.0786C834.723 38.2449 811.383 31.4088 778.555 31.4088C748.384 31.4088 722.008 39.7229 721.249 64.6653H755.405C756.164 56.3512 766.031 52.8408 778.745 52.8408C794.494 52.8408 800.946 56.5359 800.946 62.0786C800.946 67.2519 797.341 69.469 789.181 70.208L746.866 74.4574C728.27 76.305 714.417 84.2496 714.417 105.866C714.417 128.407 734.911 138.199 756.543 138.199C776.088 138.199 792.976 132.656 803.034 120.462V123.788C803.034 128.961 804.172 132.841 805.88 134.504H837.569V133.395C834.913 130.254 834.723 124.157 834.723 118.43ZM802.274 91.0856C802.274 111.224 780.642 117.876 766.221 117.876C755.594 117.876 748.004 114.735 748.004 105.682C748.004 97.3674 753.887 94.2265 762.615 93.118L792.787 88.8685C796.202 88.499 800.187 87.76 802.274 86.2819V91.0856Z"/>
-    </svg>
-    <div class="nav-brand-wrap">
-      <button class="nav-brand" onclick="App.toggleMenu()" id="navBrandBtn">
-        Brand Sprint Generator <span class="nav-chevron" id="navChevron">▾</span>
-      </button>
-      <div class="nav-dropdown hidden" id="navDropdown">
-        <a class="nav-dropdown-item" href="https://mimosaagency.com" target="_blank" rel="noopener">
-          Visit Mimosa Agency <span class="ext-icon">↗</span>
-        </a>
-        <button class="nav-dropdown-item" onclick="App.startOver()">
-          Start Over <span class="ext-icon">↺</span>
+      <svg class="nav-logo" onclick="App.startOver()" title="Back to top" viewBox="0 0 838 139" height="18" xmlns="http://www.w3.org/2000/svg" aria-label="mimosa">
+        <path d="M31.6893 34.9192H0V134.504H32.4483V82.7715C32.4483 63.9262 47.0595 57.8292 59.0142 57.8292C72.6766 57.8292 81.5952 63.372 81.5952 77.4136V134.504H114.044V82.7715C114.044 63.9262 128.655 57.8292 140.799 57.8292C154.462 57.8292 163.38 63.372 163.38 77.4136V134.504H195.828V69.2842C195.828 43.6029 177.043 32.5174 153.892 32.5174C136.814 32.5174 120.116 36.9516 110.059 48.2218C103.038 36.7668 89.3752 32.5174 72.8664 32.5174C57.4961 32.5174 41.7464 36.9516 32.6381 48.037H31.6893V34.9192Z"/>
+        <path d="M208.056 20.8776H241.263V0H208.056V20.8776ZM208.435 134.504H240.884V34.9192H208.435V134.504Z"/>
+        <path d="M285.118 34.9192H253.428V134.504H285.877V82.7715C285.877 63.9262 300.488 57.8292 312.443 57.8292C326.105 57.8292 335.023 63.372 335.023 77.4136V134.504H367.472V82.7715C367.472 63.9262 382.083 57.8292 394.227 57.8292C407.89 57.8292 416.808 63.372 416.808 77.4136V134.504H449.257V69.2842C449.257 43.6029 430.471 32.5174 407.321 32.5174C390.243 32.5174 373.544 36.9516 363.487 48.2218C356.466 36.7668 342.803 32.5174 326.295 32.5174C310.924 32.5174 295.175 36.9516 286.066 48.037H285.118V34.9192Z"/>
+        <path d="M522.396 31.4088C479.891 31.4088 457.12 51.1779 457.12 84.8039C457.12 118.43 479.891 138.199 522.396 138.199C564.901 138.199 587.672 118.43 587.672 84.8039C587.672 51.1779 564.901 31.4088 522.396 31.4088ZM522.396 114.365C501.902 114.365 490.707 103.834 490.707 84.8039C490.707 65.7738 501.902 55.2426 522.396 55.2426C542.89 55.2426 554.085 65.7738 554.085 84.8039C554.085 103.834 542.89 114.365 522.396 114.365Z"/>
+        <path d="M674.179 64.6653H708.335C707.386 39.7229 681.01 31.4088 648.182 31.4088C616.113 31.4088 591.824 39.3534 591.824 63.0024C591.824 83.5106 606.246 89.9771 628.068 92.7484L663.173 97.1826C672.85 98.4759 676.835 100.508 676.835 106.421C676.835 112.887 669.435 117.136 651.218 117.136C634.33 117.136 623.893 113.626 623.134 101.986H588.219C589.358 131.178 615.544 138.199 650.649 138.199C688.98 138.199 712.32 130.624 712.32 104.758C712.32 82.5868 698.657 76.1203 676.456 73.7184L639.074 69.469C629.396 68.3604 626.17 66.3281 626.17 61.1549C626.17 55.7969 632.812 52.1017 647.992 52.1017C662.793 52.1017 673.42 55.2426 674.179 64.6653Z"/>
+        <path d="M834.723 118.43V62.0786C834.723 38.2449 811.383 31.4088 778.555 31.4088C748.384 31.4088 722.008 39.7229 721.249 64.6653H755.405C756.164 56.3512 766.031 52.8408 778.745 52.8408C794.494 52.8408 800.946 56.5359 800.946 62.0786C800.946 67.2519 797.341 69.469 789.181 70.208L746.866 74.4574C728.27 76.305 714.417 84.2496 714.417 105.866C714.417 128.407 734.911 138.199 756.543 138.199C776.088 138.199 792.976 132.656 803.034 120.462V123.788C803.034 128.961 804.172 132.841 805.88 134.504H837.569V133.395C834.913 130.254 834.723 124.157 834.723 118.43ZM802.274 91.0856C802.274 111.224 780.642 117.876 766.221 117.876C755.594 117.876 748.004 114.735 748.004 105.682C748.004 97.3674 753.887 94.2265 762.615 93.118L792.787 88.8685C796.202 88.499 800.187 87.76 802.274 86.2819V91.0856Z"/>
+      </svg>
+      <div class="nav-brand-wrap">
+        <button class="nav-brand" onclick="App.toggleMenu()" id="navBrandBtn">
+          Brand Sprint <span class="nav-chevron" id="navChevron">▾</span>
         </button>
+        <div class="nav-dropdown hidden" id="navDropdown">
+          <a class="nav-dropdown-item" href="https://mimosaagency.com" target="_blank" rel="noopener">
+            Visit mimosa <span class="ext-icon">↗</span>
+          </a>
+          <button class="nav-dropdown-item" onclick="App.startOver()">
+            Start over <span class="ext-icon">↺</span>
+          </button>
+        </div>
       </div>
-    </div><!-- /nav-brand-wrap -->
-    </div><!-- /nav-left -->
+    </div>
     <div class="nav-right">
-      <span class="nav-counter" id="navCounter"></span>
       <button class="theme-toggle" id="themeToggle" onclick="App.toggleTheme()" title="Toggle theme">
         <span class="theme-icon-dark">◐</span>
         <span class="theme-icon-light">◑</span>
@@ -46,34 +45,46 @@
     </div>
   </nav>
 
-  <!-- Step Nav (Breadcrumb) -->
-  <div class="step-nav" id="stepNav"></div>
+  <!-- Page layout: TOC + content -->
+  <div class="page-layout">
 
-  <!-- Steps Track Wrapper -->
-  <div class="steps-wrapper">
-    <div class="steps-track" id="stepsTrack">
+    <!-- TOC Sidebar -->
+    <aside class="toc-sidebar" id="tocSidebar">
+      <div class="toc-header">
+        <span class="toc-eyebrow">Brand Sprint</span>
+      </div>
+      <nav class="toc-nav" id="tocNav" aria-label="Sections"></nav>
+      <div class="toc-footer">
+        <button class="btn btn-primary toc-generate" onclick="App.showOutput()">Generate brief →</button>
+      </div>
+    </aside>
 
-      <!-- STEP 0: WELCOME -->
-      <section class="step" id="step-0">
-        <div class="step-content welcome-content">
-          <h1 class="hero-title">Brand<br>Sprint.</h1>
-          <p class="hero-sub">Twelve questions. One true thing. Let's find what your brand already knows.</p>
-          <div class="welcome-inputs">
-            <input type="text" class="text-input lg" id="input-brandName" placeholder="Brand name" oninput="App.save('brandName', this.value)">
+    <!-- Main content -->
+    <main class="main-content" id="mainContent">
+
+      <!-- SECTION 0: WELCOME -->
+      <section class="sprint-section section-welcome" id="section-0" data-label="Welcome">
+        <div class="section-inner">
+          <div class="welcome-content">
+            <h1 class="hero-title">Brand<br>Sprint.</h1>
+            <p class="hero-sub">Twelve questions. One true thing. Let's find what your brand already knows.</p>
+            <div class="welcome-inputs">
+              <input type="text" class="text-input lg" id="input-brandName" placeholder="Brand name" oninput="App.save('brandName', this.value)">
+            </div>
+            <button class="btn btn-primary" onclick="App.scrollToFirst()">Start workshop →</button>
           </div>
-          <button class="btn btn-primary" onclick="App.next()">Start Workshop <span>→</span></button>
         </div>
       </section>
 
-      <!-- STEP 1: SCOPE & STARTING POINT -->
-      <section class="step" id="step-1">
-        <div class="step-content wide">
-          <div class="step-header">
-            <span class="step-num">01</span>
-            <h2 class="step-title">Scope &amp; Starting Point</h2>
-            <p class="step-desc">What does this project need, and where are you starting from? Get aligned before you go deeper.</p>
+      <!-- SECTION 1: SCOPE & STARTING POINT -->
+      <section class="sprint-section" id="section-1" data-label="Scope">
+        <div class="section-inner">
+          <div class="section-header">
+            <span class="section-num">01</span>
+            <h2 class="section-title">Scope &amp; starting point</h2>
+            <p class="section-desc">What does this project need, and where are you starting from? Get aligned before you go deeper.</p>
           </div>
-          <div class="step-body">
+          <div class="section-body">
             <div class="scope-section">
               <p class="field-label" style="margin-bottom:14px">What does this project need?</p>
               <div class="scope-chips" id="scope-needs-chips"></div>
@@ -90,44 +101,43 @@
         </div>
       </section>
 
-      <!-- STEP 2: PROJECT BRIEF -->
-      <section class="step" id="step-2">
-        <div class="step-content">
-          <div class="step-header">
-            <span class="step-num">02</span>
-            <h2 class="step-title">Project Brief</h2>
-            <p class="step-desc">Where are you right now? Give us the context — what this is, who it's for, what's at stake.</p>
+      <!-- SECTION 2: PROJECT BRIEF -->
+      <section class="sprint-section" id="section-2" data-label="Brief">
+        <div class="section-inner">
+          <div class="section-header">
+            <span class="section-num">02</span>
+            <h2 class="section-title">Project brief</h2>
+            <p class="section-desc">Where are you right now? Give us the context — what this is, who it's for, what's at stake.</p>
           </div>
-          <div class="step-body">
+          <div class="section-body">
             <textarea class="textarea-field tall" placeholder="Raw notes, bullet points, whatever you've got. We'll work with it." id="input-brief" oninput="App.save('brief', this.value)"></textarea>
           </div>
         </div>
       </section>
 
-      <!-- STEP 3: WHAT / HOW / WHY -->
-      <section class="step" id="step-3">
-        <div class="step-content wide">
-          <div class="step-header">
-            <span class="step-num">03</span>
-            <h2 class="step-title">What, How &amp; Why</h2>
-            <p class="step-desc">Start with why. Most brands skip it. The ones that don't — you can feel the difference.</p>
+      <!-- SECTION 3: WHAT / HOW / WHY -->
+      <section class="sprint-section section-wide" id="section-3" data-label="Purpose">
+        <div class="section-inner">
+          <div class="section-header">
+            <span class="section-num">03</span>
+            <h2 class="section-title">What, how &amp; why</h2>
+            <p class="section-desc">Start with why. Most brands skip it. The ones that don't — you can feel the difference.</p>
           </div>
-          <div class="step-body">
+          <div class="section-body">
             <div class="golden-layout">
               <div class="golden-circle-wrap">
                 <svg class="golden-svg" id="goldSvg" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
-                  <circle class="golden-ring-what" cx="150" cy="150" r="142" fill="none" stroke="#1a1a1a" stroke-width="1"/>
-                  <circle class="golden-ring-what" cx="150" cy="150" r="142" fill="none" stroke="#252525" stroke-width="1.5"/>
-                  <circle class="golden-ring-how" cx="150" cy="150" r="96" fill="none" stroke="#252525" stroke-width="1.5"/>
-                  <circle class="golden-ring-why" cx="150" cy="150" r="50" fill="none" stroke="#FF38D4" stroke-width="2"/>
-                  <text x="150" y="155" text-anchor="middle" fill="#FF38D4" font-size="13" font-family="PP Mori,sans-serif" font-weight="600" letter-spacing="2">WHY</text>
+                  <circle class="golden-ring-what" cx="150" cy="150" r="142" fill="none" stroke-width="1.5"/>
+                  <circle class="golden-ring-how" cx="150" cy="150" r="96" fill="none" stroke-width="1.5"/>
+                  <circle class="golden-ring-why" cx="150" cy="150" r="50" fill="none" stroke-width="2"/>
+                  <text x="150" y="155" text-anchor="middle" class="golden-text-why" font-size="13" font-family="PP Mori,sans-serif" font-weight="400" letter-spacing="2">WHY</text>
                   <text class="golden-text-label golden-text-how" x="150" y="108" text-anchor="middle" font-size="11" font-family="PP Mori,sans-serif" letter-spacing="1.5">HOW</text>
                   <text class="golden-text-label golden-text-what" x="150" y="20" text-anchor="middle" font-size="11" font-family="PP Mori,sans-serif" letter-spacing="1.5">WHAT</text>
                 </svg>
               </div>
               <div class="golden-inputs">
                 <div class="golden-group">
-                  <label class="field-label pink">WHY</label>
+                  <label class="field-label accent">WHY</label>
                   <textarea class="textarea-field sm" placeholder="What do you believe that most people in your category don't?" id="input-why"
                     oninput="App.save('why', this.value)"
                     onfocus="App.highlightCircle('why')"
@@ -153,29 +163,29 @@
         </div>
       </section>
 
-      <!-- STEP 4: TOP 3 VALUES -->
-      <section class="step" id="step-4">
-        <div class="step-content">
-          <div class="step-header">
-            <span class="step-num">04</span>
-            <h2 class="step-title">Top 3 Values</h2>
-            <p class="step-desc">Not the values you'd put on a website. The ones you'd actually defend in a room.</p>
+      <!-- SECTION 4: TOP 3 VALUES -->
+      <section class="sprint-section" id="section-4" data-label="Values">
+        <div class="section-inner">
+          <div class="section-header">
+            <span class="section-num">04</span>
+            <h2 class="section-title">Top 3 values</h2>
+            <p class="section-desc">Not the values you'd put on a website. The ones you'd actually defend in a room.</p>
           </div>
-          <div class="step-body">
+          <div class="section-body">
             <div class="values-list" id="values-list"></div>
           </div>
         </div>
       </section>
 
-      <!-- STEP 5: 20 YEAR PLAN -->
-      <section class="step" id="step-5">
-        <div class="step-content">
-          <div class="step-header">
-            <span class="step-num">05</span>
-            <h2 class="step-title">20 Year Plan</h2>
-            <p class="step-desc">Where does this go? Not the safe answer. The one that feels almost too ambitious to say out loud.</p>
+      <!-- SECTION 5: 20 YEAR PLAN -->
+      <section class="sprint-section" id="section-5" data-label="Vision">
+        <div class="section-inner">
+          <div class="section-header">
+            <span class="section-num">05</span>
+            <h2 class="section-title">20 year plan</h2>
+            <p class="section-desc">Where does this go? Not the safe answer. The one that feels almost too ambitious to say out loud.</p>
           </div>
-          <div class="step-body">
+          <div class="section-body">
             <div class="timeline-container">
               <div class="timeline-track">
                 <div class="timeline-line"></div>
@@ -187,40 +197,38 @@
         </div>
       </section>
 
-      <!-- STEP 6: AUDIENCES -->
-      <section class="step" id="step-6">
-        <div class="step-content wide">
-          <div class="step-header">
-            <span class="step-num">06</span>
-            <h2 class="step-title">Audiences</h2>
-            <p class="step-desc">Not who you think you should target — who you actually want. The audience that makes the work worth doing.</p>
+      <!-- SECTION 6: AUDIENCES -->
+      <section class="sprint-section section-wide" id="section-6" data-label="Audiences">
+        <div class="section-inner">
+          <div class="section-header">
+            <span class="section-num">06</span>
+            <h2 class="section-title">Audiences</h2>
+            <p class="section-desc">Not who you think you should target — who you actually want. The audience that makes the work worth doing.</p>
           </div>
-          <div class="step-body">
-            <!-- Preset drawer trigger -->
+          <div class="section-body">
             <div class="preset-bar">
               <button class="btn btn-ghost btn-sm" onclick="App.togglePresets()">
                 <span id="preset-btn-label">Browse audience presets ↓</span>
               </button>
             </div>
-            <!-- Presets drawer -->
             <div class="preset-drawer hidden" id="preset-drawer">
               <div class="preset-drawer-inner" id="preset-drawer-inner"></div>
             </div>
             <div class="audiences-list" id="audiences-list"></div>
-            <button class="btn btn-ghost mt-md" onclick="App.addAudience()">+ Add Audience</button>
+            <button class="btn btn-ghost mt-md" onclick="App.addAudience()">+ Add audience</button>
           </div>
         </div>
       </section>
 
-      <!-- STEP 7: COMPETITIVE LANDSCAPE -->
-      <section class="step" id="step-7">
-        <div class="step-content wide">
-          <div class="step-header">
-            <span class="step-num">07</span>
-            <h2 class="step-title">Competitive Landscape</h2>
-            <p class="step-desc">Who else is in the room? Map your competitors — then find where you don't overlap. That gap is where you live.</p>
+      <!-- SECTION 7: COMPETITIVE LANDSCAPE -->
+      <section class="sprint-section section-wide" id="section-7" data-label="Market">
+        <div class="section-inner">
+          <div class="section-header">
+            <span class="section-num">07</span>
+            <h2 class="section-title">Competitive landscape</h2>
+            <p class="section-desc">Who else is in the room? Map your competitors — then find where you don't overlap. That gap is where you live.</p>
           </div>
-          <div class="step-body">
+          <div class="section-body">
             <div class="quadrant-layout">
               <div class="quadrant-wrap">
                 <div class="quadrant-axis-top"><input type="text" class="axis-input" id="axis-top" value="Premium" oninput="App.updateAxisLabel('top', this.value)"></div>
@@ -241,7 +249,7 @@
                   <button class="cdot" style="--c:#FF8E1D" onclick="App.setCompColor('#FF8E1D',this)"></button>
                   <button class="cdot" style="--c:#44F33E" onclick="App.setCompColor('#44F33E',this)"></button>
                   <button class="cdot" style="--c:#20C5F9" onclick="App.setCompColor('#20C5F9',this)"></button>
-                  <button class="cdot" style="--c:#F1F1F1" onclick="App.setCompColor('#F1F1F1',this)"></button>
+                  <button class="cdot" style="--c:#9F9F9F" onclick="App.setCompColor('#9F9F9F',this)"></button>
                 </div>
                 <p class="helper-text mt-sm">Click the quadrant to place the brand.</p>
                 <div class="comp-list" id="comp-list"></div>
@@ -251,29 +259,29 @@
         </div>
       </section>
 
-      <!-- STEP 8: BRAND PERSONALITY -->
-      <section class="step" id="step-8">
-        <div class="step-content">
-          <div class="step-header">
-            <span class="step-num">08</span>
-            <h2 class="step-title">Brand Personality</h2>
-            <p class="step-desc">If your brand walked into a room, how would it show up? Drag each slider to find the register.</p>
+      <!-- SECTION 8: BRAND PERSONALITY -->
+      <section class="sprint-section" id="section-8" data-label="Personality">
+        <div class="section-inner">
+          <div class="section-header">
+            <span class="section-num">08</span>
+            <h2 class="section-title">Brand personality</h2>
+            <p class="section-desc">If your brand walked into a room, how would it show up? Drag each slider to find the register.</p>
           </div>
-          <div class="step-body">
+          <div class="section-body">
             <div class="sliders-list" id="personality-sliders"></div>
           </div>
         </div>
       </section>
 
-      <!-- STEP 9: INSPIRATION -->
-      <section class="step" id="step-9">
-        <div class="step-content">
-          <div class="step-header">
-            <span class="step-num">09</span>
-            <h2 class="step-title">Inspiration</h2>
-            <p class="step-desc">What brands do you keep coming back to? Not to copy — to understand why they work.</p>
+      <!-- SECTION 9: INSPIRATION -->
+      <section class="sprint-section" id="section-9" data-label="Inspiration">
+        <div class="section-inner">
+          <div class="section-header">
+            <span class="section-num">09</span>
+            <h2 class="section-title">Inspiration</h2>
+            <p class="section-desc">What brands do you keep coming back to? Not to copy — to understand why they work.</p>
           </div>
-          <div class="step-body">
+          <div class="section-body">
             <div class="chip-input-row">
               <input type="text" class="text-input" id="inspiration-input" placeholder="e.g. Patagonia, Glossier, Stripe" onkeydown="App.addChip('inspiration', event)">
               <button class="btn btn-sm" onclick="App.addChipBtn('inspiration')">Add</button>
@@ -284,15 +292,15 @@
         </div>
       </section>
 
-      <!-- STEP 10: COLORS -->
-      <section class="step" id="step-10">
-        <div class="step-content wide">
-          <div class="step-header">
-            <span class="step-num">10</span>
-            <h2 class="step-title">Brand Colors</h2>
-            <p class="step-desc">Colors carry feeling before words do. Pick what feels right — then name it.</p>
+      <!-- SECTION 10: COLORS -->
+      <section class="sprint-section section-wide" id="section-10" data-label="Colors">
+        <div class="section-inner">
+          <div class="section-header">
+            <span class="section-num">10</span>
+            <h2 class="section-title">Brand colors</h2>
+            <p class="section-desc">Colors carry feeling before words do. Pick what feels right — then name it.</p>
           </div>
-          <div class="step-body">
+          <div class="section-body">
             <div class="palette-row" id="palette-swatches"></div>
             <div class="color-tabs">
               <button class="color-tab active" id="tab-custom" onclick="App.switchColorTab('custom')">Custom</button>
@@ -313,30 +321,30 @@
         </div>
       </section>
 
-      <!-- STEP 11: FONTS & TEXT — mood-based picker -->
-      <section class="step" id="step-11">
-        <div class="step-content wide">
-          <div class="step-header">
-            <span class="step-num">11</span>
-            <h2 class="step-title">Type &amp; Feel</h2>
-            <p class="step-desc">Don't name a font — pick a feeling. Type says everything before anyone reads a word.</p>
+      <!-- SECTION 11: TYPE & FEEL -->
+      <section class="sprint-section section-wide" id="section-11" data-label="Type">
+        <div class="section-inner">
+          <div class="section-header">
+            <span class="section-num">11</span>
+            <h2 class="section-title">Type &amp; feel</h2>
+            <p class="section-desc">Don't name a font — pick a feeling. Type says everything before anyone reads a word.</p>
           </div>
-          <div class="step-body">
+          <div class="section-body">
             <p class="field-label" style="margin-bottom:16px">What vibe does your type need to have?</p>
             <div class="font-moods" id="font-moods"></div>
             <details class="font-details" id="font-details-toggle">
               <summary>Already know your exact fonts? Add them here →</summary>
               <div class="fonts-grid">
                 <div class="form-group">
-                  <label class="field-label">Primary Font</label>
+                  <label class="field-label">Primary font</label>
                   <input type="text" class="text-input" placeholder="e.g. PP Mori, Garamond, GT America" id="input-fontPrimary" oninput="App.save('fontPrimary', this.value)">
                 </div>
                 <div class="form-group">
-                  <label class="field-label">Secondary Font</label>
+                  <label class="field-label">Secondary font</label>
                   <input type="text" class="text-input" placeholder="e.g. Courier, Times New Roman" id="input-fontSecondary" oninput="App.save('fontSecondary', this.value)">
                 </div>
                 <div class="form-group" style="grid-column: span 2">
-                  <label class="field-label">Style Notes</label>
+                  <label class="field-label">Style notes</label>
                   <textarea class="textarea-field" placeholder="How does text behave? All caps? Tight tracking? What mood does it set?" id="input-fontNotes" oninput="App.save('fontNotes', this.value)"></textarea>
                 </div>
               </div>
@@ -345,15 +353,15 @@
         </div>
       </section>
 
-      <!-- STEP 12: IMAGERY -->
-      <section class="step" id="step-12">
-        <div class="step-content">
-          <div class="step-header">
-            <span class="step-num">12</span>
-            <h2 class="step-title">Imagery</h2>
-            <p class="step-desc">Close your eyes. What does this brand feel like — before anyone reads a word?</p>
+      <!-- SECTION 12: IMAGERY -->
+      <section class="sprint-section" id="section-12" data-label="Imagery">
+        <div class="section-inner">
+          <div class="section-header">
+            <span class="section-num">12</span>
+            <h2 class="section-title">Imagery</h2>
+            <p class="section-desc">Close your eyes. What does this brand feel like — before anyone reads a word?</p>
           </div>
-          <div class="step-body">
+          <div class="section-body">
             <div class="imagery-grid">
               <div class="form-group">
                 <label class="field-label">Emotions</label>
@@ -376,34 +384,34 @@
         </div>
       </section>
 
-      <!-- STEP 13: NEXT STEPS -->
-      <section class="step" id="step-13">
-        <div class="step-content">
-          <div class="step-header">
-            <span class="step-num">13</span>
-            <h2 class="step-title">Next Steps</h2>
-            <p class="step-desc">What happens next? Name it, own it, date it.</p>
+      <!-- SECTION 13: NEXT STEPS -->
+      <section class="sprint-section" id="section-13" data-label="Next steps">
+        <div class="section-inner">
+          <div class="section-header">
+            <span class="section-num">13</span>
+            <h2 class="section-title">Next steps</h2>
+            <p class="section-desc">What happens next? Name it, own it, date it.</p>
           </div>
-          <div class="step-body">
+          <div class="section-body">
             <div class="nextsteps-list" id="nextsteps-list"></div>
-            <button class="btn btn-ghost mt-md" onclick="App.addNextStep()">+ Add Action Item</button>
+            <button class="btn btn-ghost mt-md" onclick="App.addNextStep()">+ Add action item</button>
           </div>
         </div>
       </section>
 
-    </div><!-- /steps-track -->
-  </div><!-- /steps-wrapper -->
+      <!-- Generate CTA (bottom of form) -->
+      <div class="section-generate-bar">
+        <p class="generate-label">Ready to see your brand brief?</p>
+        <button class="btn btn-primary btn-lg" onclick="App.showOutput()">Generate brand brief →</button>
+      </div>
 
-  <!-- Bottom Nav -->
-  <div class="bottom-nav" id="bottomNav">
-    <button class="btn btn-ghost" id="btn-back" onclick="App.prev()">← Back</button>
-    <button class="btn btn-primary" id="btn-next" onclick="App.next()">Next →</button>
+    </main>
   </div>
 
   <!-- Output Overlay -->
   <div class="output-overlay hidden" id="outputOverlay">
     <div class="output-actions-bar">
-      <button class="btn btn-ghost" onclick="App.closeOutput()">← Back to Workshop</button>
+      <button class="btn btn-ghost" onclick="App.closeOutput()">← Back to workshop</button>
       <button class="btn btn-primary" onclick="window.print()">Print / Save PDF</button>
     </div>
     <div class="output-layout">
