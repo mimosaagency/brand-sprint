@@ -479,8 +479,36 @@ const App = {
   selectPairing(idx) {
     this._selectedPairing = idx;
     state.colors = COLOR_PAIRINGS[idx].colors.map(c => ({ ...c }));
+    document.documentElement.style.setProperty('--accent', this.pickAccent(COLOR_PAIRINGS[idx].colors));
     this.renderPalette();
     this.renderPairingCards(this._activeFilter);
+  },
+
+  /* Per-brand accent — recolour the whole sprint UI to the chosen pairing's hot
+     colour (most vivid, mid-light; skips near-white / near-black). Because --pink
+     routes to --accent, every accent element follows. The blue->violet re-theme,
+     made functional. */
+  pickAccent(colors) {
+    const toHsl = (hex) => {
+      const m = hex.replace('#', '');
+      const r = parseInt(m.substr(0, 2), 16) / 255, g = parseInt(m.substr(2, 2), 16) / 255, b = parseInt(m.substr(4, 2), 16) / 255;
+      const max = Math.max(r, g, b), min = Math.min(r, g, b), l = (max + min) / 2;
+      let s = 0;
+      if (max !== min) { const d = max - min; s = l > 0.5 ? d / (2 - max - min) : d / (max + min); }
+      return { s, l };
+    };
+    const usable = (l) => l > 0.10 && l < 0.92;    // not near-white / near-black
+    // the pairing's lead colour is the accent when it's usable on a white ground
+    if (colors[0] && usable(toHsl(colors[0].hex).l)) return colors[0].hex;
+    // otherwise the most vivid, mid-light colour in the set
+    let best = null, bestScore = -1;
+    for (const c of colors) {
+      const { s, l } = toHsl(c.hex);
+      if (!usable(l)) continue;
+      const score = s * (1 - Math.abs(l - 0.55));
+      if (score > bestScore) { bestScore = score; best = c.hex; }
+    }
+    return best || colors[0].hex;
   },
 
   // ─── PERSONALITY SLIDERS ──────────────────────────────────────────────────
