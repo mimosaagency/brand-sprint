@@ -111,7 +111,7 @@ const state = {
   brief: '',
   inspiration: [], inspirationNotes: '',
   milestones: MILESTONE_LABELS.map(label => ({ label, description: '' })),
-  competitors: [], pendingColor: '#FF38D4',
+  competitors: [],
   axisLabels: { top: 'Premium', bottom: 'Affordable', left: 'Traditional', right: 'Modern' },
   colors: [],
   why: '', how: '', what: '',
@@ -123,15 +123,27 @@ const state = {
   nextSteps: [{ action: '', owner: '', deadline: '' }, { action: '', owner: '', deadline: '' }, { action: '', owner: '', deadline: '' }],
 };
 
+// ─── HELPERS ──────────────────────────────────────────────────────────────────
+
+// escape user input before it ever touches innerHTML
+const esc = (s) => String(s ?? '')
+  .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+
+const STORAGE_KEY = 'sprint-state-v1';
+
 // ─── APP ──────────────────────────────────────────────────────────────────────
 
 const App = {
 
   _scrollObserver: null,
+  _persistTimer: null,
 
   init() {
     const saved = localStorage.getItem('sprint-theme') || 'light';
     document.documentElement.setAttribute('data-theme', saved);
+
+    this.restoreState();
 
     this.buildTocNav();
     this.buildTimeline();
@@ -143,8 +155,99 @@ const App = {
     this.buildFontMoods();
     this.buildAudiencePresets();
     this.buildScopeChips();
+    this.renderChips('inspiration');
+    this.renderPalette();
+    this.renderCompetitors();
+    this.restoreStaticInputs();
+    this.initQuadrantDrag();
+    this.updateTocDone();
     this.initScrollSpy();
     this.initScrollProgress();
+    state.milestones.forEach((_, i) => this.checkNode(i));
+  },
+
+  // ─── PERSISTENCE ──────────────────────────────────────────────────────────
+
+  persistSoon() {
+    clearTimeout(this._persistTimer);
+    this._persistTimer = setTimeout(() => this.persistNow(), 400);
+    this.updateTocDone();
+  },
+
+  persistNow() {
+    if (this._suspendPersist) return; // Start over cleared storage; don't re-save on pagehide
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        state,
+        selectedPairing: this._selectedPairing,
+        accent: this._accent || null,
+      }));
+    } catch (e) { /* storage full / private mode — keep working without it */ }
+  },
+
+  restoreState() {
+    let saved = null;
+    try { saved = JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch (e) { /* corrupt — ignore */ }
+    if (!saved || !saved.state) return;
+    for (const key of Object.keys(state)) {
+      if (saved.state[key] !== undefined) state[key] = saved.state[key];
+    }
+    if (saved.selectedPairing !== null && saved.selectedPairing !== undefined) {
+      this._selectedPairing = saved.selectedPairing;
+    }
+    if (saved.accent) this.applyAccent(saved.accent);
+  },
+
+  restoreStaticInputs() {
+    const map = {
+      brandName: 'input-brandName', mainChannel: 'input-mainChannel',
+      brief: 'input-brief', why: 'input-why', how: 'input-how', what: 'input-what',
+      inspirationNotes: 'input-inspirationNotes',
+      emotions: 'input-emotions', textures: 'input-textures', shapes: 'input-shapes',
+      imageryNotes: 'input-imageryNotes',
+      fontPrimary: 'input-fontPrimary', fontSecondary: 'input-fontSecondary',
+      fontNotes: 'input-fontNotes',
+    };
+    for (const [key, id] of Object.entries(map)) {
+      const el = document.getElementById(id);
+      if (el && state[key]) el.value = state[key];
+    }
+    for (const side of ['top', 'bottom', 'left', 'right']) {
+      const el = document.getElementById(`axis-${side}`);
+      if (el && state.axisLabels[side]) el.value = state.axisLabels[side];
+    }
+  },
+
+  // ─── COMPLETION ───────────────────────────────────────────────────────────
+
+  sectionDone(step) {
+    switch (step) {
+      case 1:  return !!(state.scope.length || state.hasAssets.length || state.mainChannel.trim());
+      case 2:  return !!state.brief.trim();
+      case 3:  return !!(state.why.trim() || state.how.trim() || state.what.trim());
+      case 4:  return state.values.some(v => v.name.trim());
+      case 5:  return state.milestones.some(m => m.description.trim());
+      case 6:  return state.audiences.some(a => a.name.trim());
+      case 7:  return state.competitors.length > 0;
+      case 8:  return Object.values(state.personality).some(v => v !== 50);
+      case 9:  return !!(state.inspiration.length || state.inspirationNotes.trim());
+      case 10: return state.colors.length > 0;
+      case 11: return !!(state.fontMood || state.fontPrimary.trim() || state.fontSecondary.trim() || state.fontNotes.trim());
+      case 12: return !!(state.emotions.trim() || state.textures.trim() || state.shapes.trim() || state.imageryNotes.trim());
+      case 13: return state.nextSteps.some(s => s.action.trim());
+      default: return false;
+    }
+  },
+
+  updateTocDone() {
+    let done = 0;
+    for (let step = 1; step <= 13; step++) {
+      const isDone = this.sectionDone(step);
+      if (isDone) done++;
+      document.getElementById(`toc-${step}`)?.classList.toggle('done', isDone);
+    }
+    const progress = document.getElementById('tocProgress');
+    if (progress) progress.textContent = `${done} of 13 answered`;
   },
 
   // ─── TOC ──────────────────────────────────────────────────────────────────
@@ -159,6 +262,7 @@ const App = {
       return `<button class="toc-link" id="toc-${step}" onclick="App.scrollToSection('section-${step}')">
         <span class="toc-step-num">${num}</span>
         ${label}
+        <span class="toc-done" aria-hidden="true"></span>
       </button>`;
     }).join('');
   },
@@ -224,6 +328,15 @@ const App = {
 
   startOver() {
     this.closeMenu();
+    const hasData = [...Array(13)].some((_, i) => this.sectionDone(i + 1)) || state.brandName.trim();
+    if (hasData) {
+      if (!confirm('Start over? This clears all your answers.')) return;
+      this._suspendPersist = true;
+      clearTimeout(this._persistTimer);
+      localStorage.removeItem(STORAGE_KEY);
+      window.location.reload();
+      return;
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   },
 
@@ -255,6 +368,7 @@ const App = {
 
   save(key, value) {
     state[key] = value;
+    this.persistSoon();
   },
 
   // ─── SCOPE CHIPS ──────────────────────────────────────────────────────────
@@ -282,6 +396,7 @@ const App = {
     if (idx === -1) arr.push(item);
     else arr.splice(idx, 1);
     this.buildScopeChips();
+    this.persistSoon();
   },
 
   // ─── CHIPS ────────────────────────────────────────────────────────────────
@@ -297,17 +412,19 @@ const App = {
     state[list].push(val);
     input.value = '';
     this.renderChips(list);
+    this.persistSoon();
   },
 
   removeChip(list, i) {
     state[list].splice(i, 1);
     this.renderChips(list);
+    this.persistSoon();
   },
 
   renderChips(list) {
     document.getElementById(`chips-${list}`).innerHTML = state[list].map((chip, i) => `
-      <span class="chip">${chip}
-        <button class="chip-remove" onclick="App.removeChip('${list}', ${i})">×</button>
+      <span class="chip">${esc(chip)}
+        <button class="chip-remove" aria-label="Remove ${esc(chip)}" onclick="App.removeChip('${list}', ${i})">×</button>
       </span>
     `).join('');
   },
@@ -322,16 +439,16 @@ const App = {
     ).join('');
     cardsEl.innerHTML = state.milestones.map((m, i) => `
       <div class="timeline-card">
-        <input type="text" placeholder="${m.label}" value="${m.label}"
+        <input type="text" placeholder="${esc(m.label)}" value="${esc(m.label)}"
           oninput="App.saveMilestone(${i}, 'label', this.value); App.checkNode(${i})">
         <textarea placeholder="What milestone do you reach?"
           oninput="App.saveMilestone(${i}, 'description', this.value); App.checkNode(${i})"
-        >${m.description}</textarea>
+        >${esc(m.description)}</textarea>
       </div>
     `).join('');
   },
 
-  saveMilestone(i, key, val) { state.milestones[i][key] = val; },
+  saveMilestone(i, key, val) { state.milestones[i][key] = val; this.persistSoon(); },
 
   checkNode(i) {
     const filled = state.milestones[i].description.trim().length > 0;
@@ -340,38 +457,36 @@ const App = {
 
   // ─── COMPETITIVE QUADRANT ─────────────────────────────────────────────────
 
-  updateAxisLabel(side, val) { state.axisLabels[side] = val; },
-
-  setCompColor(color, el) {
-    state.pendingColor = color;
-    document.querySelectorAll('.cdot').forEach(d => d.classList.remove('active'));
-    el.classList.add('active');
-  },
+  updateAxisLabel(side, val) { state.axisLabels[side] = val; this.persistSoon(); },
 
   placeCompetitor(e) {
+    if (e.target.closest('.comp-pt')) return;          // clicked a point, not the plane
+    if (this._justDragged) { this._justDragged = false; return; }
     const name = document.getElementById('competitor-name').value.trim();
     if (!name) { document.getElementById('competitor-name').focus(); return; }
-    const q = document.getElementById('quadrant');
-    const rect = q.getBoundingClientRect();
+    const rect = document.getElementById('quadrant').getBoundingClientRect();
     const x = ((e.clientX - rect.left) / rect.width) * 100;
     const y = ((e.clientY - rect.top) / rect.height) * 100;
-    state.competitors.push({ name, x, y, color: state.pendingColor });
+    state.competitors.push({ name, x, y });
     document.getElementById('competitor-name').value = '';
     this.renderCompetitors();
+    this.persistSoon();
   },
 
   renderCompetitors() {
     document.getElementById('competitors-layer').innerHTML = state.competitors.map((c, i) => `
-      <div class="comp-dot" style="left:${c.x}%;top:${c.y}%;background:${c.color};"
-           title="${c.name}" ondblclick="App.removeCompetitor(${i})">
-        <span class="comp-label">${c.name}</span>
+      <div class="comp-pt" data-i="${i}" style="left:${c.x}%;top:${c.y}%">
+        <span class="comp-dot-sq"></span>
+        <span class="comp-label">${esc(c.name)}</span>
+        <button class="comp-pt-remove" aria-label="Remove ${esc(c.name)}"
+          onclick="event.stopPropagation(); App.removeCompetitor(${i})">×</button>
       </div>
     `).join('');
     document.getElementById('comp-list').innerHTML = state.competitors.map((c, i) => `
       <div class="comp-list-item">
-        <div class="dot-sm" style="background:${c.color}"></div>
-        <span>${c.name}</span>
-        <span style="margin-left:auto;cursor:pointer;" onclick="App.removeCompetitor(${i})">×</span>
+        <div class="dot-sm"></div>
+        <span>${esc(c.name)}</span>
+        <button class="comp-list-remove" aria-label="Remove ${esc(c.name)}" onclick="App.removeCompetitor(${i})">×</button>
       </div>
     `).join('');
   },
@@ -379,6 +494,46 @@ const App = {
   removeCompetitor(i) {
     state.competitors.splice(i, 1);
     this.renderCompetitors();
+    this.persistSoon();
+  },
+
+  // drag a placed point to reposition it (the DS Quadrant interaction)
+  _dragIx: -1,
+  _dragMoved: false,
+  _justDragged: false,
+
+  initQuadrantDrag() {
+    const q = document.getElementById('quadrant');
+    if (!q) return;
+    q.addEventListener('pointerdown', (e) => {
+      const pt = e.target.closest('.comp-pt');
+      if (!pt || e.target.closest('.comp-pt-remove')) return;
+      this._dragIx = parseInt(pt.dataset.i, 10);
+      this._dragMoved = false;
+      pt.classList.add('dragging');
+      pt.setPointerCapture?.(e.pointerId);
+      e.preventDefault();
+    });
+    q.addEventListener('pointermove', (e) => {
+      if (this._dragIx < 0) return;
+      const rect = q.getBoundingClientRect();
+      const x = Math.min(100, Math.max(0, ((e.clientX - rect.left) / rect.width) * 100));
+      const y = Math.min(100, Math.max(0, ((e.clientY - rect.top) / rect.height) * 100));
+      const c = state.competitors[this._dragIx];
+      if (!c) return;
+      c.x = x; c.y = y;
+      this._dragMoved = true;
+      const pt = q.querySelector(`.comp-pt[data-i="${this._dragIx}"]`);
+      if (pt) { pt.style.left = `${x}%`; pt.style.top = `${y}%`; }
+    });
+    const endDrag = () => {
+      if (this._dragIx < 0) return;
+      q.querySelector(`.comp-pt[data-i="${this._dragIx}"]`)?.classList.remove('dragging');
+      if (this._dragMoved) { this._justDragged = true; this.persistSoon(); }
+      this._dragIx = -1;
+    };
+    q.addEventListener('pointerup', endDrag);
+    q.addEventListener('pointercancel', endDrag);
   },
 
   // ─── COLOR PALETTE ────────────────────────────────────────────────────────
@@ -397,19 +552,26 @@ const App = {
     state.colors.push({ hex, name });
     document.getElementById('color-name').value = '';
     this.renderPalette();
+    this.applyAccent(this.pickAccent(state.colors));
+    this.persistSoon();
   },
 
-  removeColor(i) { state.colors.splice(i, 1); this.renderPalette(); },
+  removeColor(i) {
+    state.colors.splice(i, 1);
+    this.renderPalette();
+    this.applyAccent(state.colors.length ? this.pickAccent(state.colors) : null);
+    this.persistSoon();
+  },
 
   renderPalette() {
     document.getElementById('palette-swatches').innerHTML = state.colors.map((c, i) => `
       <div class="palette-swatch">
-        <div class="swatch-color" style="background:${c.hex}"></div>
+        <div class="swatch-color" style="background:${esc(c.hex)}"></div>
         <div class="swatch-info">
-          <span class="swatch-name">${c.name}</span>
-          <span class="swatch-hex">${c.hex.toUpperCase()}</span>
+          <span class="swatch-name">${esc(c.name)}</span>
+          <span class="swatch-hex">${esc(c.hex.toUpperCase())}</span>
         </div>
-        <button class="swatch-remove" onclick="App.removeColor(${i})">×</button>
+        <button class="swatch-remove" aria-label="Remove ${esc(c.name)}" onclick="App.removeColor(${i})">×</button>
       </div>
     `).join('');
   },
@@ -464,14 +626,15 @@ const App = {
       const globalIdx = COLOR_PAIRINGS.indexOf(p);
       const isSelected = this._selectedPairing === globalIdx;
       return `
-        <div class="pairing-card${isSelected ? ' selected' : ''}"
+        <button type="button" class="pairing-card${isSelected ? ' selected' : ''}"
+             role="radio" aria-checked="${isSelected}"
              onclick="if(!App._pairingDragged) App.selectPairing(${globalIdx})">
           <div class="pairing-chips">${p.colors.map(c => `<div class="pairing-chip" style="background:${c.hex}"></div>`).join('')}</div>
           <div class="pairing-meta">
             <span class="pairing-name">${p.name}</span>
             <div class="pairing-codes">${p.colors.map(c => `<span class="pairing-code">${c.hex.toUpperCase()} · ${c.name}</span>`).join('')}</div>
           </div>
-        </div>
+        </button>
       `;
     }).join('');
   },
@@ -479,9 +642,27 @@ const App = {
   selectPairing(idx) {
     this._selectedPairing = idx;
     state.colors = COLOR_PAIRINGS[idx].colors.map(c => ({ ...c }));
-    document.documentElement.style.setProperty('--accent', this.pickAccent(COLOR_PAIRINGS[idx].colors));
+    this.applyAccent(this.pickAccent(COLOR_PAIRINGS[idx].colors));
     this.renderPalette();
     this.renderPairingCards(this._activeFilter);
+    this.persistSoon();
+  },
+
+  /* Set the whole sprint's accent (+ its soft wash) to the brand-being-built's
+     colour; null restores the mimosa default (Windows Blue). */
+  _accent: null,
+  applyAccent(hex) {
+    const root = document.documentElement.style;
+    this._accent = hex || null;
+    if (!hex) {
+      root.removeProperty('--accent');
+      root.removeProperty('--accent-soft');
+      return;
+    }
+    const m = hex.replace('#', '');
+    const r = parseInt(m.substr(0, 2), 16), g = parseInt(m.substr(2, 2), 16), b = parseInt(m.substr(4, 2), 16);
+    root.setProperty('--accent', hex);
+    root.setProperty('--accent-soft', `rgba(${r}, ${g}, ${b}, 0.16)`);
   },
 
   /* Per-brand accent — recolour the whole sprint UI to the chosen pairing's hot
@@ -514,22 +695,23 @@ const App = {
   // ─── PERSONALITY SLIDERS ──────────────────────────────────────────────────
 
   buildSliders() {
-    document.getElementById('personality-sliders').innerHTML = PERSONALITY_SLIDERS.map((s, i) => `
+    document.getElementById('personality-sliders').innerHTML = PERSONALITY_SLIDERS.map((s, i) => {
+      const v = state.personality[s.key];
+      return `
       <div class="slider-row">
         <div class="slider-ends">
           <span class="slider-end-left">${s.left}</span>
-          <span class="slider-end-right">${s.right}</span>
+          <span class="slider-end-right">${s.right}<span class="slider-val" id="sval-${i}">${v}</span></span>
         </div>
         <div class="slider-track-wrap">
           <div class="slider-bg"></div>
-          <div class="slider-fill-bar" id="sfill-${i}" style="width:50%"></div>
-          <input type="range" class="slider-range" min="0" max="100" value="50"
-            id="slider-${i}"
+          <div class="slider-fill-bar" id="sfill-${i}" style="width:${v}%"></div>
+          <input type="range" class="slider-range" min="0" max="100" value="${v}"
+            id="slider-${i}" aria-label="${s.left} to ${s.right}"
             oninput="App.updateSlider(${i}, '${s.key}', this.value)">
         </div>
-        <div class="slider-val" id="sval-${i}">50</div>
       </div>
-    `).join('');
+    `; }).join('');
   },
 
   updateSlider(i, key, val) {
@@ -537,6 +719,7 @@ const App = {
     state.personality[key] = v;
     document.getElementById(`sfill-${i}`).style.width = `${v}%`;
     document.getElementById(`sval-${i}`).textContent = v;
+    this.persistSoon();
   },
 
   // ─── VALUES ───────────────────────────────────────────────────────────────
@@ -547,17 +730,17 @@ const App = {
         <div class="value-num">0${i + 1}</div>
         <div class="value-inputs">
           <input type="text" class="text-input" placeholder="e.g. Honesty, Craft, Access"
-            value="${v.name}" oninput="App.saveValue(${i}, 'name', this.value)">
+            value="${esc(v.name)}" oninput="App.saveValue(${i}, 'name', this.value)">
           <textarea class="textarea-field sm"
             placeholder="What does this look like in practice? How would you know if you were living it?"
             oninput="App.saveValue(${i}, 'description', this.value)"
-          >${v.description}</textarea>
+          >${esc(v.description)}</textarea>
         </div>
       </div>
     `).join('');
   },
 
-  saveValue(i, key, val) { state.values[i][key] = val; },
+  saveValue(i, key, val) { state.values[i][key] = val; this.persistSoon(); },
 
   // ─── AUDIENCES ────────────────────────────────────────────────────────────
 
@@ -572,27 +755,27 @@ const App = {
           <div class="form-group">
             <label class="field-label">Who are they?</label>
             <input type="text" class="text-input" placeholder="e.g. First-generation founders"
-              value="${a.name}" oninput="App.saveAudience(${i}, 'name', this.value)">
+              value="${esc(a.name)}" oninput="App.saveAudience(${i}, 'name', this.value)">
           </div>
           <div class="form-group">
             <label class="field-label">Context</label>
             <input type="text" class="text-input" placeholder="e.g. Building in a mature, crowded category"
-              value="${a.role}" oninput="App.saveAudience(${i}, 'role', this.value)">
+              value="${esc(a.role)}" oninput="App.saveAudience(${i}, 'role', this.value)">
           </div>
           <div class="form-group" style="grid-column:span 2">
             <label class="field-label">What do they need that nobody's giving them yet?</label>
             <textarea class="textarea-field sm" placeholder="The thing they're not finding anywhere else. The gap your brand fills."
               oninput="App.saveAudience(${i}, 'needs', this.value)"
-            >${a.needs}</textarea>
+            >${esc(a.needs)}</textarea>
           </div>
         </div>
       </div>
     `).join('');
   },
 
-  addAudience() { state.audiences.push({ name: '', role: '', description: '', needs: '' }); this.buildAudiences(); },
-  removeAudience(i) { state.audiences.splice(i, 1); this.buildAudiences(); },
-  saveAudience(i, key, val) { state.audiences[i][key] = val; },
+  addAudience() { state.audiences.push({ name: '', role: '', description: '', needs: '' }); this.buildAudiences(); this.persistSoon(); },
+  removeAudience(i) { state.audiences.splice(i, 1); this.buildAudiences(); this.persistSoon(); },
+  saveAudience(i, key, val) { state.audiences[i][key] = val; this.persistSoon(); },
 
   // ─── NEXT STEPS ───────────────────────────────────────────────────────────
 
@@ -602,38 +785,41 @@ const App = {
         <span class="nextstep-num">${String(i + 1).padStart(2, '0')}</span>
         <div class="nextstep-fields">
           <input type="text" class="text-input nextstep-action" placeholder="What needs to happen"
-            value="${s.action}" oninput="App.saveNextStep(${i}, 'action', this.value)">
+            value="${esc(s.action)}" oninput="App.saveNextStep(${i}, 'action', this.value)">
           <input type="text" class="text-input nextstep-owner" placeholder="Who owns it"
-            value="${s.owner}" oninput="App.saveNextStep(${i}, 'owner', this.value)">
+            value="${esc(s.owner)}" oninput="App.saveNextStep(${i}, 'owner', this.value)">
           <input type="text" class="text-input nextstep-date" placeholder="By when"
-            value="${s.deadline}" oninput="App.saveNextStep(${i}, 'deadline', this.value)">
+            value="${esc(s.deadline)}" oninput="App.saveNextStep(${i}, 'deadline', this.value)">
         </div>
         ${i > 2 ? `<button class="nextstep-remove" onclick="App.removeNextStep(${i})">×</button>` : ''}
       </div>
     `).join('');
   },
 
-  addNextStep() { state.nextSteps.push({ action: '', owner: '', deadline: '' }); this.buildNextSteps(); },
-  removeNextStep(i) { state.nextSteps.splice(i, 1); this.buildNextSteps(); },
-  saveNextStep(i, key, val) { state.nextSteps[i][key] = val; },
+  addNextStep() { state.nextSteps.push({ action: '', owner: '', deadline: '' }); this.buildNextSteps(); this.persistSoon(); },
+  removeNextStep(i) { state.nextSteps.splice(i, 1); this.buildNextSteps(); this.persistSoon(); },
+  saveNextStep(i, key, val) { state.nextSteps[i][key] = val; this.persistSoon(); },
 
   // ─── AUDIENCE PRESETS ─────────────────────────────────────────────────────
 
   buildAudiencePresets() {
     const el = document.getElementById('preset-drawer-inner');
     if (!el) return;
-    el.innerHTML = AUDIENCE_PRESETS.map(group => `
+    el.innerHTML = AUDIENCE_PRESETS.map((group, g) => `
       <div class="preset-group">
         <span class="preset-group-label">${group.category}</span>
         <div class="preset-chips">
-          ${group.items.map(item => `
-            <button class="preset-chip" onclick="App.addPreset(${JSON.stringify(item).replace(/"/g, '&quot;')})">
-              ${item.name}
-            </button>
+          ${group.items.map((item, j) => `
+            <button class="preset-chip" data-g="${g}" data-j="${j}">${item.name}</button>
           `).join('')}
         </div>
       </div>
     `).join('');
+    el.addEventListener('click', (e) => {
+      const chip = e.target.closest('.preset-chip');
+      if (!chip) return;
+      this.addPreset(AUDIENCE_PRESETS[+chip.dataset.g].items[+chip.dataset.j]);
+    });
   },
 
   togglePresets() {
@@ -645,8 +831,9 @@ const App = {
   },
 
   addPreset(preset) {
-    state.audiences.push({ ...preset });
+    state.audiences.push({ description: '', ...preset });
     this.buildAudiences();
+    this.persistSoon();
     document.getElementById('audiences-list').lastElementChild?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   },
 
@@ -656,7 +843,8 @@ const App = {
     const el = document.getElementById('font-moods');
     if (!el) return;
     el.innerHTML = FONT_MOODS.map(m => `
-      <div class="font-mood-card${state.fontMood === m.mood ? ' selected' : ''}"
+      <button type="button" class="font-mood-card${state.fontMood === m.mood ? ' selected' : ''}"
+           role="radio" aria-checked="${state.fontMood === m.mood}"
            onclick="App.selectFontMood('${m.mood}')">
         <div class="font-mood-sample" style="font-family:'${m.font}',serif;font-weight:${m.weight}">
           ${m.sample}
@@ -665,24 +853,24 @@ const App = {
           <span class="font-mood-name">${m.mood}</span>
           <span class="font-mood-desc">${m.desc}</span>
           <div class="font-mood-examples">${m.examples.map(e => `<span class="font-mood-ex">${e}</span>`).join('')}</div>
-          <div class="font-mood-foundries">${m.foundries.map(f => `<span class="font-mood-foundry">${f}</span>`).join('')}</div>
         </div>
-      </div>
+      </button>
     `).join('');
   },
 
   selectFontMood(mood) {
     state.fontMood = state.fontMood === mood ? null : mood;
     this.buildFontMoods();
+    this.persistSoon();
   },
 
   // ─── GOLDEN CIRCLE ────────────────────────────────────────────────────────
 
   highlightCircle(which) {
-    const svg = document.getElementById('goldSvg');
-    if (!svg) return;
-    svg.classList.remove('focus-why', 'focus-how', 'focus-what');
-    if (which) svg.classList.add(`focus-${which}`);
+    const el = document.getElementById('goldenCircle');
+    if (!el) return;
+    el.classList.remove('focus-why', 'focus-how', 'focus-what');
+    if (which) el.classList.add(`focus-${which}`);
   },
 
   // ─── OUTPUT ───────────────────────────────────────────────────────────────
@@ -713,52 +901,50 @@ const App = {
     const paletteHTML = state.colors.length
       ? state.colors.map(c => `
         <div class="out-swatch">
-          <div class="out-swatch-color" style="background:${c.hex};width:76px;height:56px"></div>
+          <div class="out-swatch-color" style="background:${esc(c.hex)}"></div>
           <div class="out-swatch-info">
-            <span class="out-swatch-name">${c.name}</span>
-            <span class="out-swatch-hex">${c.hex.toUpperCase()}</span>
+            <span class="out-swatch-name">${esc(c.name)}</span>
+            <span class="out-swatch-hex">${esc(c.hex.toUpperCase())}</span>
           </div>
         </div>`).join('')
-      : '<p style="color:#999;font-size:13px">No colors defined.</p>';
+      : '<p style="color:#999;font-size:13px">No colours defined.</p>';
 
-    const valuesHTML = state.values.filter(v => v.name).map((v, i) => {
-      const colors = ['#FF38D4', '#FF8E1D', '#44F33E'];
-      return `<div class="out-value-card" style="border-top:2px solid ${colors[i] || '#ddd'}">
+    const valuesHTML = state.values.filter(v => v.name).map((v, i) => `
+      <div class="out-value-card">
         <div class="out-value-num">0${i + 1}</div>
-        <div class="out-value-name">${v.name}</div>
-        ${v.description ? `<p class="out-value-desc">${v.description}</p>` : ''}
-      </div>`;
-    }).join('') || '<p style="color:#999;font-size:13px">No values defined.</p>';
+        <div class="out-value-name">${esc(v.name)}</div>
+        ${v.description ? `<p class="out-value-desc">${esc(v.description)}</p>` : ''}
+      </div>`).join('') || '<p style="color:#999;font-size:13px">No values defined.</p>';
 
     const audiencesHTML = state.audiences.filter(a => a.name).map(a => `
       <div class="out-card">
-        <div class="out-card-title">${a.role || 'Audience'}</div>
-        <div class="out-card-text"><strong>${a.name}</strong>${a.needs ? '<br>' + a.needs : ''}</div>
+        <div class="out-card-title">${esc(a.role || 'Audience')}</div>
+        <div class="out-card-text"><strong>${esc(a.name)}</strong>${a.needs ? '<br>' + esc(a.needs) : ''}</div>
       </div>`).join('') || '<p style="color:#999;font-size:13px">No audiences defined.</p>';
 
     const nextStepsHTML = state.nextSteps.filter(s => s.action).map((s, i) => `
       <div class="out-step-item">
         <span class="out-step-num">${String(i + 1).padStart(2, '0')}</span>
-        <span class="out-step-action">${s.action}</span>
-        <span class="out-step-owner">${s.owner || '—'}</span>
-        <span class="out-step-date">${s.deadline || '—'}</span>
+        <span class="out-step-action">${esc(s.action)}</span>
+        <span class="out-step-owner">${esc(s.owner || '—')}</span>
+        <span class="out-step-date">${esc(s.deadline || '—')}</span>
       </div>`).join('') || '<p style="color:#999;font-size:13px">No next steps defined.</p>';
 
     const inspirationHTML = state.inspiration.length
-      ? `<div class="out-tags">${state.inspiration.map(i => `<span class="out-tag">${i}</span>`).join('')}</div>` : '';
+      ? `<div class="out-tags">${state.inspiration.map(i => `<span class="out-tag">${esc(i)}</span>`).join('')}</div>` : '';
 
     const milestonesHTML = state.milestones.filter(m => m.description).map(m => `
       <div class="out-card">
-        <div class="out-card-title">${m.label}</div>
-        <div class="out-card-text">${m.description}</div>
+        <div class="out-card-title">${esc(m.label)}</div>
+        <div class="out-card-text">${esc(m.description)}</div>
       </div>`).join('') || '<p style="color:#999;font-size:13px">No milestones defined.</p>';
 
     const hasScopeData = state.scope.length || state.hasAssets.length || state.mainChannel;
     const scopeHTML = hasScopeData ? `
       <div class="out-grid-2">
-        ${state.scope.length ? `<div class="out-card"><div class="out-card-title">Project needs</div><div class="out-card-text">${state.scope.join(' · ')}</div></div>` : ''}
-        ${state.hasAssets.length ? `<div class="out-card"><div class="out-card-title">Already have</div><div class="out-card-text">${state.hasAssets.join(' · ')}</div></div>` : ''}
-        ${state.mainChannel ? `<div class="out-card" style="grid-column:span 2"><div class="out-card-title">Main channel</div><div class="out-card-text">${state.mainChannel}</div></div>` : ''}
+        ${state.scope.length ? `<div class="out-card"><div class="out-card-title">Project needs</div><div class="out-card-text">${state.scope.map(esc).join(' · ')}</div></div>` : ''}
+        ${state.hasAssets.length ? `<div class="out-card"><div class="out-card-title">Already have</div><div class="out-card-text">${state.hasAssets.map(esc).join(' · ')}</div></div>` : ''}
+        ${state.mainChannel ? `<div class="out-card" style="grid-column:span 2"><div class="out-card-title">Main channel</div><div class="out-card-text">${esc(state.mainChannel)}</div></div>` : ''}
       </div>` : '';
 
     const sidebarItems = [
@@ -785,22 +971,22 @@ const App = {
 
     doc.innerHTML = `
       <div class="out-header" id="out-header">
-        <div><div class="out-brand-name">${brand}</div></div>
+        <div><div class="out-brand-name">${esc(brand)}</div></div>
         <div class="out-meta">
-          <span>Brand Sprint Brief</span>
+          <span>Brand sprint brief</span>
           <span style="margin-top:5px">${date}</span>
         </div>
       </div>
 
       ${hasScopeData ? `<div class="out-section" id="out-scope"><span class="out-section-title">Scope &amp; starting point</span>${scopeHTML}</div>` : ''}
-      ${state.brief ? `<div class="out-section" id="out-brief"><span class="out-section-title">Project brief</span><p class="out-text">${state.brief.replace(/\n/g, '<br>')}</p></div>` : ''}
+      ${state.brief ? `<div class="out-section" id="out-brief"><span class="out-section-title">Project brief</span><p class="out-text">${esc(state.brief).replace(/\n/g, '<br>')}</p></div>` : ''}
       ${(state.what || state.how || state.why) ? `
         <div class="out-section" id="out-why">
           <span class="out-section-title">What, how &amp; why</span>
           <div class="out-grid-2">
-            ${state.why  ? `<div class="out-card"><div class="out-card-title" style="color:#FF38D4">Why</div><div class="out-card-text">${state.why}</div></div>` : ''}
-            ${state.how  ? `<div class="out-card"><div class="out-card-title">How</div><div class="out-card-text">${state.how}</div></div>` : ''}
-            ${state.what ? `<div class="out-card" style="grid-column:span 2"><div class="out-card-title">What</div><div class="out-card-text">${state.what}</div></div>` : ''}
+            ${state.why  ? `<div class="out-card"><div class="out-card-title">Why</div><div class="out-card-text">${esc(state.why)}</div></div>` : ''}
+            ${state.how  ? `<div class="out-card"><div class="out-card-title">How</div><div class="out-card-text">${esc(state.how)}</div></div>` : ''}
+            ${state.what ? `<div class="out-card" style="grid-column:span 2"><div class="out-card-title">What</div><div class="out-card-text">${esc(state.what)}</div></div>` : ''}
           </div>
         </div>` : ''}
       ${state.values.some(v => v.name) ? `<div class="out-section" id="out-values"><span class="out-section-title">Top 3 values</span><div class="out-values">${valuesHTML}</div></div>` : ''}
@@ -819,19 +1005,19 @@ const App = {
           <span class="out-section-title">Typography</span>
           <div class="out-grid-2">
             ${state.fontMood ? (() => { const m = FONT_MOODS.find(f => f.mood === state.fontMood); return m ? `<div class="out-card" style="grid-column:span 2"><div class="out-card-title">Type mood — ${m.mood}</div><div class="out-card-text">${m.desc}<br><em style="color:#999">Examples: ${m.examples.join(', ')}</em></div></div>` : ''; })() : ''}
-            ${state.fontPrimary   ? `<div class="out-card"><div class="out-card-title">Primary</div><div class="out-card-text">${state.fontPrimary}</div></div>` : ''}
-            ${state.fontSecondary ? `<div class="out-card"><div class="out-card-title">Secondary</div><div class="out-card-text">${state.fontSecondary}</div></div>` : ''}
-            ${state.fontNotes     ? `<div class="out-card" style="grid-column:span 2"><div class="out-card-title">Style notes</div><div class="out-card-text">${state.fontNotes}</div></div>` : ''}
+            ${state.fontPrimary   ? `<div class="out-card"><div class="out-card-title">Primary</div><div class="out-card-text">${esc(state.fontPrimary)}</div></div>` : ''}
+            ${state.fontSecondary ? `<div class="out-card"><div class="out-card-title">Secondary</div><div class="out-card-text">${esc(state.fontSecondary)}</div></div>` : ''}
+            ${state.fontNotes     ? `<div class="out-card" style="grid-column:span 2"><div class="out-card-title">Style notes</div><div class="out-card-text">${esc(state.fontNotes)}</div></div>` : ''}
           </div>
         </div>` : ''}
       ${(state.emotions || state.textures || state.shapes || state.imageryNotes) ? `
         <div class="out-section" id="out-imagery">
           <span class="out-section-title">Imagery &amp; mood</span>
           <div class="out-grid-2">
-            ${state.emotions     ? `<div class="out-card"><div class="out-card-title">Emotions</div><div class="out-card-text">${state.emotions}</div></div>` : ''}
-            ${state.textures     ? `<div class="out-card"><div class="out-card-title">Textures</div><div class="out-card-text">${state.textures}</div></div>` : ''}
-            ${state.shapes       ? `<div class="out-card"><div class="out-card-title">Shapes</div><div class="out-card-text">${state.shapes}</div></div>` : ''}
-            ${state.imageryNotes ? `<div class="out-card"><div class="out-card-title">References</div><div class="out-card-text">${state.imageryNotes}</div></div>` : ''}
+            ${state.emotions     ? `<div class="out-card"><div class="out-card-title">Emotions</div><div class="out-card-text">${esc(state.emotions)}</div></div>` : ''}
+            ${state.textures     ? `<div class="out-card"><div class="out-card-title">Textures</div><div class="out-card-text">${esc(state.textures)}</div></div>` : ''}
+            ${state.shapes       ? `<div class="out-card"><div class="out-card-title">Shapes</div><div class="out-card-text">${esc(state.shapes)}</div></div>` : ''}
+            ${state.imageryNotes ? `<div class="out-card"><div class="out-card-title">References</div><div class="out-card-text">${esc(state.imageryNotes)}</div></div>` : ''}
           </div>
         </div>` : ''}
       ${state.nextSteps.some(s => s.action) ? `<div class="out-section" id="out-nextsteps"><span class="out-section-title">Next steps</span><div class="out-nextsteps">${nextStepsHTML}</div></div>` : ''}
@@ -860,7 +1046,12 @@ document.addEventListener('click', e => {
   if (!document.getElementById('navBrandBtn')?.contains(e.target)) App.closeMenu();
 });
 
-// Comp dot label CSS (injected once)
-const _compStyle = document.createElement('style');
-_compStyle.textContent = `.comp-dot .comp-label { position:absolute; bottom:-18px; left:50%; transform:translateX(-50%); font-size:9px; white-space:nowrap; font-family:var(--font); pointer-events:none; background:rgba(0,0,0,0.55); color:#fff; padding:1px 6px; border-radius:var(--radius-pill); letter-spacing:0.03em; }`;
-document.head.appendChild(_compStyle);
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  const overlay = document.getElementById('outputOverlay');
+  if (overlay && !overlay.classList.contains('hidden')) { App.closeOutput(); return; }
+  App.closeMenu();
+});
+
+// flush any pending autosave before the tab goes away
+window.addEventListener('pagehide', () => App.persistNow());

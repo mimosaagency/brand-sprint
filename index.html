@@ -55,6 +55,7 @@
       </div>
       <nav class="toc-nav" id="tocNav" aria-label="Sections"></nav>
       <div class="toc-footer">
+        <span class="toc-progress" id="tocProgress"></span>
         <button class="btn btn-primary toc-generate" onclick="App.showOutput()">Generate brief →</button>
       </div>
     </aside>
@@ -68,10 +69,12 @@
           <div class="welcome-content">
             <h1 class="hero-title">Brand<br>Sprint.</h1>
             <p class="hero-sub">Twelve questions. One true thing. Let's find what your brand already knows.</p>
-            <div class="welcome-inputs">
-              <input type="text" class="text-input lg" id="input-brandName" placeholder="Brand name" oninput="App.save('brandName', this.value)">
+            <div class="welcome-row">
+              <input type="text" class="text-input lg" id="input-brandName" placeholder="Brand name"
+                oninput="App.save('brandName', this.value)"
+                onkeydown="if(event.key==='Enter'){event.preventDefault();App.scrollToFirst();}">
+              <button class="btn btn-primary" onclick="App.scrollToFirst()">Start workshop →</button>
             </div>
-            <button class="btn btn-primary" onclick="App.scrollToFirst()">Start workshop →</button>
           </div>
         </div>
       </section>
@@ -86,14 +89,14 @@
           </div>
           <div class="section-body">
             <div class="scope-section">
-              <p class="field-label" style="margin-bottom:14px">What does this project need?</p>
+              <p class="field-label">What does this project need?</p>
               <div class="scope-chips" id="scope-needs-chips"></div>
             </div>
-            <div class="scope-section" style="margin-top:32px">
-              <p class="field-label" style="margin-bottom:14px">What do you already have?</p>
+            <div class="scope-section">
+              <p class="field-label">What do you already have?</p>
               <div class="scope-chips" id="scope-assets-chips"></div>
             </div>
-            <div class="scope-section" style="margin-top:32px">
+            <div class="scope-section">
               <label class="field-label">Main selling channel or context</label>
               <input type="text" class="text-input" placeholder="e.g. Instagram, B2B sales, physical retail, SaaS platform" id="input-mainChannel" oninput="App.save('mainChannel', this.value)">
             </div>
@@ -125,19 +128,19 @@
           </div>
           <div class="section-body">
             <div class="golden-layout">
-              <div class="golden-circle-wrap">
-                <svg class="golden-svg" id="goldSvg" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
-                  <circle class="golden-ring-what" cx="150" cy="150" r="142" fill="none" stroke-width="1.5"/>
-                  <circle class="golden-ring-how" cx="150" cy="150" r="96" fill="none" stroke-width="1.5"/>
-                  <circle class="golden-ring-why" cx="150" cy="150" r="50" fill="none" stroke-width="2"/>
-                  <text x="150" y="155" text-anchor="middle" class="golden-text-why" font-size="13" font-family="PP Mori,sans-serif" font-weight="400" letter-spacing="2">WHY</text>
-                  <text class="golden-text-label golden-text-how" x="150" y="108" text-anchor="middle" font-size="11" font-family="PP Mori,sans-serif" letter-spacing="1.5">HOW</text>
-                  <text class="golden-text-label golden-text-what" x="150" y="20" text-anchor="middle" font-size="11" font-family="PP Mori,sans-serif" letter-spacing="1.5">WHAT</text>
-                </svg>
+              <div class="golden-circle" id="goldenCircle" aria-hidden="true">
+                <div class="golden-disc" data-band="what"></div>
+                <div class="golden-disc" data-band="how"></div>
+                <div class="golden-disc" data-band="why"></div>
+                <div class="golden-labels">
+                  <span class="golden-lbl" data-band="what">What</span>
+                  <span class="golden-lbl" data-band="how">How</span>
+                  <span class="golden-lbl" data-band="why">Why</span>
+                </div>
               </div>
               <div class="golden-inputs">
                 <div class="golden-group">
-                  <label class="field-label accent">WHY</label>
+                  <label class="field-label">Why</label>
                   <textarea class="textarea-field sm" placeholder="What do you believe that most people in your category don't?" id="input-why"
                     oninput="App.save('why', this.value)"
                     onfocus="App.highlightCircle('why')"
@@ -229,32 +232,24 @@
             <p class="section-desc">Who else is in the room? Map your competitors — then find where you don't overlap. That gap is where you live.</p>
           </div>
           <div class="section-body">
-            <div class="quadrant-layout">
-              <div class="quadrant-wrap">
-                <div class="quadrant-axis-top"><input type="text" class="axis-input" id="axis-top" value="Premium" oninput="App.updateAxisLabel('top', this.value)"></div>
-                <div class="quadrant-axis-bottom"><input type="text" class="axis-input" id="axis-bottom" value="Affordable" oninput="App.updateAxisLabel('bottom', this.value)"></div>
-                <div class="quadrant-axis-left"><input type="text" class="axis-input" id="axis-left" value="Traditional" oninput="App.updateAxisLabel('left', this.value)"></div>
-                <div class="quadrant-axis-right"><input type="text" class="axis-input" id="axis-right" value="Modern" oninput="App.updateAxisLabel('right', this.value)"></div>
-                <div class="quadrant" id="quadrant" onclick="App.placeCompetitor(event)">
-                  <div class="q-hline"></div>
-                  <div class="q-vline"></div>
-                  <div id="competitors-layer"></div>
-                </div>
-              </div>
-              <div class="quadrant-sidebar">
-                <p class="field-label">Add a brand</p>
-                <input type="text" class="text-input" id="competitor-name" placeholder="Brand name (e.g. Nike)">
-                <div class="color-row mt-sm">
-                  <button class="cdot active" style="--c:#FF38D4" onclick="App.setCompColor('#FF38D4',this)"></button>
-                  <button class="cdot" style="--c:#FF8E1D" onclick="App.setCompColor('#FF8E1D',this)"></button>
-                  <button class="cdot" style="--c:#44F33E" onclick="App.setCompColor('#44F33E',this)"></button>
-                  <button class="cdot" style="--c:#20C5F9" onclick="App.setCompColor('#20C5F9',this)"></button>
-                  <button class="cdot" style="--c:#9F9F9F" onclick="App.setCompColor('#9F9F9F',this)"></button>
-                </div>
-                <p class="helper-text mt-sm">Click the quadrant to place the brand.</p>
-                <div class="comp-list" id="comp-list"></div>
+            <div class="quadrant-toolbar">
+              <input type="text" class="text-input" id="competitor-name" placeholder="Type a brand name (e.g. Nike)">
+              <p class="helper-text">Click the map to place it. Drag a dot to move it; hover for ×.</p>
+            </div>
+            <div class="quadrant-frame">
+              <div class="quadrant-axis-top"><input type="text" class="axis-input" id="axis-top" value="Premium" oninput="App.updateAxisLabel('top', this.value)"></div>
+              <div class="quadrant-axis-bottom"><input type="text" class="axis-input" id="axis-bottom" value="Affordable" oninput="App.updateAxisLabel('bottom', this.value)"></div>
+              <div class="quadrant-axis-left"><input type="text" class="axis-input" id="axis-left" value="Traditional" oninput="App.updateAxisLabel('left', this.value)"></div>
+              <div class="quadrant-axis-right"><input type="text" class="axis-input" id="axis-right" value="Modern" oninput="App.updateAxisLabel('right', this.value)"></div>
+              <div class="quadrant" id="quadrant" onclick="App.placeCompetitor(event)">
+                <span class="q-ring" style="width:33.3%;height:33.3%"></span>
+                <span class="q-ring" style="width:66.6%;height:66.6%"></span>
+                <div class="q-hline"></div>
+                <div class="q-vline"></div>
+                <div id="competitors-layer"></div>
               </div>
             </div>
+            <div class="comp-list" id="comp-list"></div>
           </div>
         </div>
       </section>
@@ -303,19 +298,19 @@
           <div class="section-body">
             <div class="palette-row" id="palette-swatches"></div>
             <div class="color-tabs">
-              <button class="color-tab active" id="tab-custom" onclick="App.switchColorTab('custom')">Custom</button>
-              <button class="color-tab" id="tab-pairings" onclick="App.switchColorTab('pairings')">Pairings</button>
+              <button class="color-tab active" id="tab-pairings" onclick="App.switchColorTab('pairings')">Pairings</button>
+              <button class="color-tab" id="tab-custom" onclick="App.switchColorTab('custom')">Custom</button>
             </div>
-            <div class="color-panel" id="panel-custom">
-              <div class="palette-add-row">
-                <input type="color" id="color-picker" value="#FF38D4" class="color-picker-input">
-                <input type="text" class="text-input" id="color-name" placeholder="Color name (e.g. Electric Rose)">
-                <button class="btn btn-sm" onclick="App.addColor()">+ Add</button>
-              </div>
-            </div>
-            <div class="color-panel hidden" id="panel-pairings">
+            <div class="color-panel" id="panel-pairings">
               <div class="pairings-filter" id="pairings-filter"></div>
               <div class="pairings-track" id="pairings-track"></div>
+            </div>
+            <div class="color-panel hidden" id="panel-custom">
+              <div class="palette-add-row">
+                <input type="color" id="color-picker" value="#FF38D4" class="color-picker-input">
+                <input type="text" class="text-input" id="color-name" placeholder="Colour name (e.g. Electric Rose)">
+                <button class="btn btn-sm" onclick="App.addColor()">+ Add</button>
+              </div>
             </div>
           </div>
         </div>
@@ -330,7 +325,7 @@
             <p class="section-desc">Don't name a font — pick a feeling. Type says everything before anyone reads a word.</p>
           </div>
           <div class="section-body">
-            <p class="field-label" style="margin-bottom:16px">What vibe does your type need to have?</p>
+            <p class="field-label" style="margin-bottom:12px">What vibe does your type need to have?</p>
             <div class="font-moods" id="font-moods"></div>
             <details class="font-details" id="font-details-toggle">
               <summary>Already know your exact fonts? Add them here →</summary>
