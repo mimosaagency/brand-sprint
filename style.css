@@ -802,12 +802,18 @@ button { font-family: var(--font); }
 .golden-disc[data-band="what"] { inset: 0; background: var(--golden-1); }
 .golden-disc[data-band="how"]  { inset: 16.6%; background: var(--golden-2); }
 .golden-disc[data-band="why"]  { inset: 33.3%; background: var(--golden-3); }
-.golden-circle.focus-what .golden-disc[data-band="what"] { background: hsl(0 0% 82%); }
-.golden-circle.focus-how  .golden-disc[data-band="how"]  { background: hsl(0 0% 75%); }
-.golden-circle.focus-why  .golden-disc[data-band="why"]  { background: hsl(0 0% 66%); }
-[data-theme="dark"] .golden-circle.focus-what .golden-disc[data-band="what"] { background: hsl(0 0% 23%); }
-[data-theme="dark"] .golden-circle.focus-how  .golden-disc[data-band="how"]  { background: hsl(0 0% 28%); }
-[data-theme="dark"] .golden-circle.focus-why  .golden-disc[data-band="why"]  { background: hsl(0 0% 33%); }
+/* active band = a wash of the (per-brand) accent — selection speaks accent,
+   like every other control; the greys stay reserved for resting state */
+.golden-circle.focus-what .golden-disc[data-band="what"],
+.golden-circle.focus-how  .golden-disc[data-band="how"],
+.golden-circle.focus-why  .golden-disc[data-band="why"] {
+  background: color-mix(in srgb, var(--accent) 24%, var(--surface-card));
+}
+[data-theme="dark"] .golden-circle.focus-what .golden-disc[data-band="what"],
+[data-theme="dark"] .golden-circle.focus-how  .golden-disc[data-band="how"],
+[data-theme="dark"] .golden-circle.focus-why  .golden-disc[data-band="why"] {
+  background: color-mix(in srgb, var(--accent) 32%, var(--surface-card));
+}
 .golden-labels { position: absolute; inset: 0; pointer-events: none; }
 .golden-lbl {
   position: absolute; left: 0; right: 0; transform: translateY(-50%);
@@ -825,7 +831,8 @@ button { font-family: var(--font); }
 
 .golden-inputs { display: flex; flex-direction: column; gap: var(--space-4); }
 .golden-group { display: flex; flex-direction: column; gap: var(--space-2); }
-.golden-group .field-label { margin-bottom: 0; }
+.golden-group .field-label { margin-bottom: 0; transition: color var(--dur-base) var(--ease-soft); }
+.golden-group:focus-within .field-label { color: var(--text-primary); }
 
 /* === PERSONALITY SLIDERS — the DS Slider look === */
 .sliders-list { display: flex; flex-direction: column; gap: var(--space-6); }
