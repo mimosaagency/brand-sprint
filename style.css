@@ -106,8 +106,7 @@
   /* Layout */
   --nav-h: 56px;
   --toc-w: 224px;
-  --col-content: 640px;
-  --col-wide:    880px;
+  --col-content: 840px; /* ONE column for every question, centred */
 
   /* Golden circle band greys (outer → inner) — must step visibly against
      the --surface-panel ground (#F1F1F1 ≈ 94.5%), so start well below it */
@@ -334,11 +333,10 @@ button { font-family: var(--font); }
 
 /* === SPRINT SECTIONS === */
 .sprint-section {
-  padding: var(--space-8) var(--space-8) var(--space-8) var(--space-7);
+  padding: var(--space-8) var(--space-7);
   border-bottom: 1px solid var(--hairline);
 }
-.section-inner { max-width: var(--col-content); }
-.sprint-section.section-wide .section-inner { max-width: var(--col-wide); }
+.section-inner { max-width: var(--col-content); margin-inline: auto; }
 
 .section-welcome {
   min-height: calc(100vh - var(--nav-h));
@@ -396,8 +394,8 @@ button { font-family: var(--font); }
 
 /* === GENERATE BAR === */
 .section-generate-bar {
-  padding: var(--space-8) var(--space-8) var(--space-9) var(--space-7);
-  display: flex; align-items: center; gap: var(--space-5);
+  padding: var(--space-8) var(--space-7) var(--space-9);
+  display: flex; align-items: center; justify-content: center; gap: var(--space-5);
   flex-wrap: wrap;
 }
 .generate-label { font-size: 14px; color: var(--text-secondary); }
@@ -477,11 +475,20 @@ button { font-family: var(--font); }
 
 .scope-section + .scope-section { margin-top: var(--space-6); }
 .scope-section .field-label { margin-bottom: var(--space-3); }
+.scope-section .text-input { max-width: 400px; }
+
+/* shared card header voice — micro-caps label + tabular number */
+.card-label {
+  display: block;
+  font-size: var(--type-micro-size); letter-spacing: var(--track-caps);
+  text-transform: uppercase; color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
 
 /* === SELECTABLE CHIPS — ring, not fill (works with any per-brand accent) === */
 .scope-chips { display: flex; flex-wrap: wrap; gap: var(--space-2); }
 .scope-chip {
-  padding: 8px 16px; border-radius: var(--radius-pill);
+  padding: 7px 14px; border-radius: var(--radius-pill);
   font-size: var(--type-small-size); letter-spacing: var(--track-label);
   cursor: pointer;
   background: var(--surface-card);
@@ -501,7 +508,7 @@ button { font-family: var(--font); }
 }
 
 /* === TAG CHIPS (inspiration) === */
-.chip-input-row { display: flex; gap: var(--space-2); align-items: center; }
+.chip-input-row { display: flex; gap: var(--space-2); align-items: center; max-width: 480px; }
 .chip-input-row .text-input { flex: 1; }
 .chips-container { display: flex; flex-wrap: wrap; gap: 6px; margin-top: var(--space-3); }
 .chip {
@@ -543,22 +550,16 @@ button { font-family: var(--font); }
   box-shadow: inset 0 0 0 1px var(--ink-ring);
 }
 
-/* === TIMELINE === */
-.timeline-track { position: relative; padding: 0 var(--space-4); margin-bottom: var(--space-6); }
-.timeline-line { height: 1px; background: var(--border-subtle); position: relative; }
-.timeline-line::after {
-  content: '';
-  position: absolute; right: -6px; top: -4px;
-  border-left: 7px solid var(--border-subtle);
-  border-top: 4px solid transparent;
-  border-bottom: 4px solid transparent;
+/* === TIMELINE — a vertical spine; each row = node · year · milestone === */
+.timeline-rows { position: relative; display: flex; flex-direction: column; gap: var(--space-3); }
+.timeline-rows::before {
+  content: ''; position: absolute; left: 5px; top: 20px; bottom: 20px;
+  width: 1px; background: var(--border-subtle);
 }
-.timeline-nodes {
-  position: absolute; top: -5px; left: var(--space-4); right: var(--space-4);
-  display: flex; justify-content: space-between;
-}
+.timeline-row { display: flex; gap: var(--space-4); align-items: flex-start; position: relative; }
 .timeline-node {
-  width: 11px; height: 11px; border-radius: 50%;
+  width: 11px; height: 11px; border-radius: 50%; flex: none;
+  margin-top: 19px;
   background: var(--surface-panel); border: 1.5px solid var(--border-subtle);
   transition: border-color var(--dur-base), background var(--dur-base), transform var(--dur-base) var(--ease-spring);
 }
@@ -566,10 +567,10 @@ button { font-family: var(--font); }
   background: var(--accent); border-color: var(--accent);
   transform: scale(1.15);
 }
-.timeline-cards { display: flex; gap: var(--space-3); }
 .timeline-card {
-  flex: 1; padding: var(--space-4);
-  display: flex; flex-direction: column; gap: var(--space-2);
+  flex: 1; padding: var(--space-3) var(--space-4);
+  display: grid; grid-template-columns: 130px 1fr; gap: var(--space-3);
+  align-items: start;
 }
 .timeline-card input {
   border: none; outline: none;
@@ -581,10 +582,11 @@ button { font-family: var(--font); }
   transition: background var(--dur-fast), box-shadow var(--dur-fast), color var(--dur-fast);
 }
 .timeline-card input:focus { background: var(--bg-page); box-shadow: inset 0 0 0 1px var(--ink-ring); color: var(--text-primary); }
+.timeline-card input { margin-top: 6px; }
 .timeline-card textarea {
   border: none; outline: none;
   color: var(--text-primary); font-family: var(--font); font-size: var(--type-body-size);
-  line-height: 1.5; resize: none; width: 100%; min-height: 88px;
+  line-height: 1.5; resize: vertical; width: 100%; min-height: 48px;
   padding: 8px 10px; border-radius: var(--radius-sm);
   transition: background var(--dur-fast), box-shadow var(--dur-fast);
 }
@@ -594,9 +596,9 @@ button { font-family: var(--font); }
 /* === COMPETITIVE QUADRANT — the DS Quadrant look, vanilla === */
 .quadrant-toolbar {
   display: flex; gap: var(--space-3); align-items: center;
-  margin-bottom: var(--space-5);
+  max-width: 560px; margin: 0 auto var(--space-5);
 }
-.quadrant-toolbar .text-input { max-width: 320px; }
+.quadrant-toolbar .text-input { max-width: 300px; }
 .quadrant-toolbar .helper-text { flex: 1; }
 .quadrant-frame {
   position: relative;
@@ -674,7 +676,7 @@ button { font-family: var(--font); }
 
 .comp-list {
   display: flex; flex-wrap: wrap; gap: var(--space-2);
-  margin-top: var(--space-4);
+  max-width: 560px; margin: var(--space-4) auto 0;
 }
 .comp-list-item {
   display: inline-flex; align-items: center; gap: 7px;
@@ -699,7 +701,7 @@ button { font-family: var(--font); }
 .palette-row:empty { display: none; }
 .palette-swatch {
   position: relative; flex: 0 0 auto;
-  width: 96px; border-radius: var(--radius-md); overflow: hidden;
+  width: 160px; border-radius: var(--radius-md); overflow: hidden;
   animation: swatchIn var(--dur-slow) var(--ease-out);
 }
 @keyframes swatchIn {
@@ -767,7 +769,7 @@ button { font-family: var(--font); }
 .pairings-track::-webkit-scrollbar-track { background: transparent; }
 .pairings-track::-webkit-scrollbar-thumb { background: var(--border-subtle); }
 .pairing-card {
-  flex-shrink: 0; width: 148px;
+  flex-shrink: 0; width: 160px;
   border-radius: var(--radius-md); overflow: hidden;
   border: none; padding: 0; text-align: left;
   cursor: pointer;
@@ -790,7 +792,7 @@ button { font-family: var(--font); }
 
 /* === GOLDEN CIRCLE — flat tonal discs (the DS GoldenCircle look) === */
 .golden-layout {
-  display: grid; grid-template-columns: 280px 1fr;
+  display: grid; grid-template-columns: 320px 1fr;
   gap: var(--space-7); align-items: center;
 }
 .golden-circle { position: relative; width: 100%; aspect-ratio: 1; }
@@ -834,8 +836,11 @@ button { font-family: var(--font); }
 .golden-group .field-label { margin-bottom: 0; transition: color var(--dur-base) var(--ease-soft); }
 .golden-group:focus-within .field-label { color: var(--text-primary); }
 
-/* === PERSONALITY SLIDERS — the DS Slider look === */
-.sliders-list { display: flex; flex-direction: column; gap: var(--space-6); }
+/* === PERSONALITY SLIDERS — the DS Slider look, centred-560 like the quadrant === */
+.sliders-list {
+  display: flex; flex-direction: column; gap: var(--space-6);
+  max-width: 560px; margin-inline: auto;
+}
 .slider-row { display: flex; flex-direction: column; gap: var(--space-2); }
 .slider-ends {
   display: flex; justify-content: space-between; align-items: baseline;
@@ -899,15 +904,10 @@ button { font-family: var(--font); }
 .values-list { display: flex; flex-direction: column; gap: var(--space-3); }
 .value-item {
   padding: var(--space-5);
-  display: flex; align-items: flex-start; gap: var(--space-4);
+  display: flex; flex-direction: column; gap: var(--space-3);
 }
-.value-num {
-  font-size: var(--type-micro-size); letter-spacing: 0.08em;
-  color: var(--text-muted); line-height: 1;
-  flex-shrink: 0; padding-top: 14px;
-  font-variant-numeric: tabular-nums;
-}
-.value-inputs { flex: 1; display: flex; flex-direction: column; gap: var(--space-2); }
+.value-inputs { display: flex; flex-direction: column; gap: var(--space-2); }
+.value-inputs .text-input { max-width: 320px; }
 
 /* === AUDIENCES === */
 .audiences-list { display: flex; flex-direction: column; gap: var(--space-3); }
@@ -936,8 +936,8 @@ button { font-family: var(--font); }
 /* === FONT MOODS — the ChoiceCards specimen tiles === */
 .font-moods {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(164px, 1fr));
-  gap: var(--space-2);
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--space-3);
   margin-bottom: var(--space-5);
 }
 .font-mood-card {
@@ -951,8 +951,8 @@ button { font-family: var(--font); }
 .font-mood-card:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 .font-mood-card.selected { box-shadow: inset 0 0 0 2px var(--accent); }
 .font-mood-sample {
-  height: 84px; display: flex; align-items: center; justify-content: center;
-  font-size: 25px;
+  height: 110px; display: flex; align-items: center; justify-content: center;
+  font-size: 30px;
   color: var(--text-primary);
   transition: background var(--dur-base);
   padding: 0 var(--space-3); text-align: center;
@@ -1024,7 +1024,7 @@ button { font-family: var(--font); }
 }
 .preset-chips { display: flex; flex-wrap: wrap; gap: var(--space-1); }
 .preset-chip {
-  padding: 5px 12px; border-radius: var(--radius-pill);
+  padding: 7px 14px; border-radius: var(--radius-pill);
   font-size: var(--type-small-size);
   background: var(--field-on-card); color: var(--text-secondary);
   border: none;
@@ -1201,8 +1201,7 @@ button { font-family: var(--font); }
   .golden-layout { grid-template-columns: 1fr; gap: var(--space-5); }
   .golden-circle { max-width: 260px; margin: 0 auto; }
 
-  .timeline-track { display: none; }
-  .timeline-cards { flex-direction: column; }
+  .timeline-card { grid-template-columns: 1fr; }
 
   .imagery-grid, .fonts-grid, .audience-grid { grid-template-columns: 1fr; }
   .imagery-grid .form-group:last-child,
@@ -1211,6 +1210,7 @@ button { font-family: var(--font); }
 
   .quadrant-toolbar { flex-direction: column; align-items: stretch; }
   .quadrant-toolbar .text-input { max-width: none; }
+  .scope-section .text-input, .value-inputs .text-input, .chip-input-row { max-width: none; }
   .quadrant-frame { padding: 30px 28px; }
 
   .nextstep-fields { flex-wrap: wrap; }

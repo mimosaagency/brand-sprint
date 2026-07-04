@@ -432,18 +432,17 @@ const App = {
   // ─── TIMELINE ─────────────────────────────────────────────────────────────
 
   buildTimeline() {
-    const nodesEl = document.getElementById('timeline-nodes');
-    const cardsEl = document.getElementById('timeline-cards');
-    nodesEl.innerHTML = state.milestones.map((_, i) =>
-      `<div class="timeline-node" id="tnode-${i}"></div>`
-    ).join('');
-    cardsEl.innerHTML = state.milestones.map((m, i) => `
-      <div class="timeline-card">
-        <input type="text" placeholder="${esc(m.label)}" value="${esc(m.label)}"
-          oninput="App.saveMilestone(${i}, 'label', this.value); App.checkNode(${i})">
-        <textarea placeholder="What milestone do you reach?"
-          oninput="App.saveMilestone(${i}, 'description', this.value); App.checkNode(${i})"
-        >${esc(m.description)}</textarea>
+    const rowsEl = document.getElementById('timeline-rows');
+    rowsEl.innerHTML = state.milestones.map((m, i) => `
+      <div class="timeline-row">
+        <span class="timeline-node" id="tnode-${i}"></span>
+        <div class="timeline-card">
+          <input type="text" placeholder="${esc(m.label)}" value="${esc(m.label)}"
+            oninput="App.saveMilestone(${i}, 'label', this.value); App.checkNode(${i})">
+          <textarea placeholder="What milestone do you reach?"
+            oninput="App.saveMilestone(${i}, 'description', this.value); App.checkNode(${i})"
+          >${esc(m.description)}</textarea>
+        </div>
       </div>
     `).join('');
   },
@@ -727,7 +726,7 @@ const App = {
   buildValues() {
     document.getElementById('values-list').innerHTML = state.values.map((v, i) => `
       <div class="value-item">
-        <div class="value-num">0${i + 1}</div>
+        <span class="card-label">Value 0${i + 1}</span>
         <div class="value-inputs">
           <input type="text" class="text-input" placeholder="e.g. Honesty, Craft, Access"
             value="${esc(v.name)}" oninput="App.saveValue(${i}, 'name', this.value)">
@@ -748,7 +747,7 @@ const App = {
     document.getElementById('audiences-list').innerHTML = state.audiences.map((a, i) => `
       <div class="audience-card" id="aud-${i}">
         <div class="audience-header">
-          <span class="audience-label">Audience ${i + 1}</span>
+          <span class="card-label">Audience 0${i + 1}</span>
           ${i > 1 ? `<button class="audience-remove" onclick="App.removeAudience(${i})">×</button>` : ''}
         </div>
         <div class="audience-grid">
